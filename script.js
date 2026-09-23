@@ -1,0 +1,152 @@
+(() => {
+  'use strict';
+
+  const byId = (id) => document.getElementById(id);
+  const bookElement = byId('flipbook');
+  if (!bookElement) return;
+
+  const TOTAL_PAGES = 156;
+  const PREVIEW_LAST_PAGE = 14;
+  const counter = byId('preview-counter');
+  const previous = byId('preview-previous');
+  const next = byId('preview-next');
+  const replay = byId('preview-replay');
+  const end = byId('preview-end');
+  const zoom = byId('page-zoom');
+  const zoomImage = byId('zoom-image');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (!window.St || !St.PageFlip) {
+    counter.textContent = 'Muestra temporalmente no disponible';
+    previous.disabled = true;
+    next.disabled = true;
+    return;
+  }
+
+  const pages = Array.from(bookElement.querySelectorAll('.preview-page, .preview-lock-page'));
+  const pageFlip = new St.PageFlip(bookElement, {
+    width: 360,
+    height: 480,
+    size: 'stretch',
+    minWidth: 220,
+    maxWidth: 360,
+    minHeight: 293,
+    maxHeight: 480,
+    autoSize: false,
+    usePortrait: true,
+    showCover: true,
+    drawShadow: true,
+    maxShadowOpacity: 0.38,
+    flippingTime: reducedMotion.matches ? 120 : 760,
+    mobileScrollSupport: true,
+    swipeDistance: 24,
+    clickEventForward: true,
+    disableFlipByClick: true,
+  });
+
+  let isFlipping = false;
+  let pointerStart = null;
+  let suppressZoomUntil = 0;
+
+  function finishPreview() {
+    const atEnd = pageFlip.getCurrentPageIndex() >= PREVIEW_LAST_PAGE - 1;
+    end.hidden = !(atEnd && pageFlip.getOrientation() === 'portrait');
+    next.disabled = atEnd || isFlipping;
+    if (atEnd) next.setAttribute('aria-label', 'La muestra ha terminado');
+  }
+
+  function updateControls(index = pageFlip.getCurrentPageIndex()) {
+    const page = Math.min(index + 1, PREVIEW_LAST_PAGE);
+    const isSpread = pageFlip.getOrientation() === 'landscape' && page > 1 && page < PREVIEW_LAST_PAGE;
+    counter.textContent = isSpread
+      ? `Páginas ${page}–${Math.min(page + 1, 13)} de ${TOTAL_PAGES}`
+      : `Página ${page} de ${TOTAL_PAGES}`;
+    previous.disabled = index === 0 || isFlipping;
+    next.disabled = isFlipping;
+    next.innerHTML = index === 0
+      ? 'Abrir libro <span aria-hidden="true">→</span>'
+      : 'Siguiente <span aria-hidden="true">→</span>';
+    next.setAttribute('aria-label', index === 0 ? 'Abrir la muestra' : 'Pasar a la siguiente página');
+    finishPreview();
+  }
+
+  pageFlip.on('flip', ({ data }) => updateControls(data));
+  pageFlip.on('changeOrientation', () => requestAnimationFrame(() => updateControls()));
+  pageFlip.on('changeState', ({ data }) => {
+    isFlipping = data === 'flipping';
+    if (data === 'flipping' || data === 'read') updateControls();
+  });
+  pageFlip.loadFromHTML(pages);
+  updateControls();
+
+  function flipFromButton(direction) {
+    // The library's click guard also applies to its own animated button API.
+    const settings = pageFlip.getSettings();
+    settings.disableFlipByClick = false;
+    try {
+      if (direction > 0) pageFlip.flipNext('bottom');
+      else pageFlip.flipPrev('bottom');
+    } finally {
+      settings.disableFlipByClick = true;
+    }
+  }
+
+  next.addEventListener('click', () => {
+    if (isFlipping || pageFlip.getCurrentPageIndex() >= PREVIEW_LAST_PAGE - 1) return;
+    flipFromButton(1);
+  });
+  previous.addEventListener('click', () => {
+    if (!isFlipping && pageFlip.getCurrentPageIndex() > 0) flipFromButton(-1);
+  });
+  replay.addEventListener('click', () => {
+    if (isFlipping) return;
+    pageFlip.turnToPage(0);
+    updateControls(0);
+  });
+
+  bookElement.addEventListener('pointerdown', (event) => {
+    pointerStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  }, true);
+  bookElement.addEventListener('pointermove', (event) => {
+    if (!pointerStart || pointerStart.id !== event.pointerId) return;
+    const distance = Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y);
+    if (distance > 14) suppressZoomUntil = performance.now() + 500;
+  }, true);
+  bookElement.addEventListener('pointerup', (event) => {
+    if (pointerStart && pointerStart.id === event.pointerId) pointerStart = null;
+  }, true);
+  bookElement.addEventListener('pointercancel', () => {
+    pointerStart = null;
+  }, true);
+
+  function openZoom(leaf) {
+    if (!leaf || !zoom.showModal) return;
+    const page = Number(leaf && leaf.dataset.page);
+    if (!page || page >= PREVIEW_LAST_PAGE || isFlipping) return;
+    const image = leaf.querySelector('img');
+    zoomImage.src = image.src;
+    zoomImage.alt = `Página ${page} ampliada del ebook`;
+    zoom.showModal();
+  }
+  bookElement.addEventListener('click', (event) => {
+    if (performance.now() < suppressZoomUntil) return;
+    openZoom(event.target.closest('.preview-page'));
+  });
+  bookElement.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const leaf = event.target.closest('.preview-page');
+    if (!leaf) return;
+    event.preventDefault();
+    openZoom(leaf);
+  });
+  byId('zoom-close').addEventListener('click', () => zoom.close());
+  zoom.addEventListener('click', (event) => {
+    if (event.target === zoom) zoom.close();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && zoom.open) zoom.close();
+  });
+  reducedMotion.addEventListener('change', ({ matches }) => {
+    pageFlip.getSettings().flippingTime = matches ? 120 : 760;
+  });
+})();
