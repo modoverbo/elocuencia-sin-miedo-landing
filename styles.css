@@ -92,3 +92,30 @@ a.button.button-yellow.hotmart-fb{color:var(--ink)!important;background:var(--ye
 .mobile-buy a.hotmart-fb{font-family:Poppins,Arial,sans-serif!important;font-size:11px!important;font-weight:700!important;text-decoration:none!important;box-shadow:none!important}
 
 a.button.hotmart-fb,a.header-buy.hotmart-fb{font-family:Poppins,Arial,sans-serif!important;text-decoration:none!important}
+
+/* The hero offers two equally prominent, finger-friendly choices. */
+.hero-actions{justify-content:center;max-width:550px;gap:14px}
+.hero-actions>a{min-height:58px;min-width:205px}
+.hero-actions .button-outline{border-color:var(--ink);color:var(--ink);background:transparent}
+.hero-actions .button-outline:hover{background:#fff9df}
+
+.author{background:var(--ink);color:var(--paper)}
+.author .section-kicker .rule{background:rgba(249,246,237,.25)}
+.author-grid{display:grid;grid-template-columns:minmax(270px,.82fr) minmax(0,1.18fr);gap:clamp(46px,7vw,110px);align-items:center}
+.author-photo{position:relative;max-width:500px;isolation:isolate}
+.author-photo::before{content:"";position:absolute;inset:10% -5% -6% 8%;background:var(--yellow);z-index:-1}
+.author-portrait{width:100%;height:auto;aspect-ratio:1;object-fit:cover;background:#080808}
+.author-copy{max-width:640px}
+.author-copy .tiny-label{color:var(--yellow);margin-bottom:20px}
+.author-copy h2{font-size:clamp(39px,4.5vw,65px);margin-bottom:28px}
+.author-copy p{color:#dad9d0;line-height:1.85;max-width:590px}
+.author-copy .text-link{color:var(--yellow);border-color:var(--yellow);margin-top:15px}
+
+@media(max-width:760px){
+  .hero-actions{flex-direction:column;align-items:center;max-width:none;gap:12px}
+  .hero-actions>a{width:min(100%,340px);min-height:58px}
+  .author-grid{grid-template-columns:1fr;gap:54px}
+  .author-photo{width:min(78%,330px);margin-inline:auto}
+  .author-copy h2{font-size:clamp(36px,9vw,50px)}
+  .author-copy p{font-size:13px}
+}
