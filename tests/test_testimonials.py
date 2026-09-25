@@ -35,9 +35,20 @@ class TestimonialSectionTests(unittest.TestCase):
         hero_avatar = re.search(r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{([^{}]*)\}", self.css)
         self.assertIsNotNone(hero_avatar)
         self.assertRegex(hero_avatar.group(1), r"width\s*:\s*30px")
+        self.assertRegex(hero_avatar.group(1), r"background-size\s*:\s*cover")
+        self.assertRegex(hero_avatar.group(1), r"background-position\s*:\s*center")
         mobile = re.search(r"@media\s*\(max-width:\s*760px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", self.css)
         self.assertIsNotNone(mobile)
         self.assertRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*width\s*:\s*24px")
+        self.assertNotRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*background-size\s*:\s*\d+px")
+
+    def test_hero_social_proof_visibly_labels_its_example_figures(self):
+        hero_start = self.html.index('<section class="hero"')
+        hero_end = self.html.index("</section>", hero_start)
+        hero = self.html[hero_start:hero_end]
+        pill_start = hero.index('class="testimonial-social-proof"')
+        pill_end = hero.index("</a>", pill_start)
+        self.assertIn("EJEMPLO", hero[pill_start:pill_end])
 
     def test_four_exact_owner_supplied_quotes_and_attributions_are_displayed(self):
         reviews_start = self.html.index('id="resenas"')
@@ -56,6 +67,11 @@ class TestimonialSectionTests(unittest.TestCase):
                 self.assertIn(name, reviews)
                 self.assertIn(f"{role} · {age}", reviews)
                 self.assertIn(quote, reviews)
+
+    def test_testimonial_portrait_labels_identify_illustrative_fictional_people(self):
+        for name in ("Santiago R.", "Valentina M.", "Daniel G.", "Isabel C."):
+            with self.subTest(name=name):
+                self.assertIn(f'aria-label="Retrato ilustrativo de una persona ficticia: {name}"', self.html)
 
     def test_testimonial_section_is_between_offer_and_author_and_uses_local_portraits(self):
         offer_start = self.html.index('<section class="offer ')
