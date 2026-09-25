@@ -66,6 +66,17 @@ class AuthorSectionTests(unittest.TestCase):
             r"\.author-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
         )
 
+    def test_preview_hint_contains_a_reduced_motion_aware_swipe_cue(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        self.assertRegex(
+            html,
+            r'<span class="preview-swipe-cue" id="preview-swipe-cue" aria-hidden="true">↔</span>',
+        )
+        self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*\b1\s*;?")
+        reduced_motion = css[css.rfind("@media(prefers-reduced-motion:reduce){"):]
+        self.assertRegex(reduced_motion, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation\s*:\s*none")
+
 
 if __name__ == "__main__":
     unittest.main()

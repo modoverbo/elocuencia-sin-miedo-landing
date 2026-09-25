@@ -44,13 +44,15 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 **Rollback boundary:** Revert T1's `index.html`, `styles.css`, and `tests/test_author_section.py` changes together to restore the previous section order, CTA sizing/copy, and expectations. Leave `.gitignore`, `.engram/`, and all T2 preview-cue behavior untouched.
 
-**Commit evidence:** pending until the T1 work-unit commit is created; record its identity in the post-commit document/mirror update.
+**RDD outcome:** Parent assessed the committed T1 range as medium risk with `review_due=false` and `review_due_reason=under_budget` (177 changed lines including the task document). The unrelated `.engram/config.json` was excluded using the parent-authorized inventory `sha256:118d4e3ed063111db6d7dad8e8d480a021860c2d592f8a6f4b7b3b4870da9cef`; no review lifecycle was due.
+
+**Commit evidence:** `e7154245ec3a5ea1936aabb39e9be1f8447fee00` — `feat(landing): move author before hero and strengthen CTAs` on `codex/author-first-cta-preview`.
 
 ### T2 — One-time swipe discoverability cue
 
-- [ ] Add a one-time swipe animation/cue to the book preview to signal horizontal discoverability.
-- [ ] Stop the cue after the user's first relevant interaction and suppress motion when `prefers-reduced-motion` is active.
-- [ ] Add regression tests for cue lifecycle and reduced-motion behavior where supported by the existing test structure.
+- [x] Add a one-time swipe animation/cue to the book preview to signal horizontal discoverability.
+- [x] Stop the cue after the user's first relevant interaction and suppress motion when `prefers-reduced-motion` is active.
+- [x] Add regression tests for cue lifecycle and reduced-motion behavior using the existing Node test runner and Python markup suite.
 
 **Acceptance criteria**
 
@@ -61,10 +63,14 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 **Route and trigger evidence:** delegated direct writer; this task requires preparation across implementation and test files and is part of the multi-file writer scope.
 
-**Progress / verification:** Not started. No implementation verification yet. Baseline only: `python3 -m unittest discover -s tests -v` — 2 tests passed before feature work.
+**Route and trigger evidence:** delegated direct writer; preparation spans implementation, markup, CSS, and lifecycle tests, and the task modifies multiple non-trivial files.
 
-**Commit evidence:** pending.
+**Progress / verification:** Implemented test-first. RED before source changes: `node --test tests/test_preview_swipe_cue.js` — both lifecycle tests failed because the cue did not start; `python3 -m unittest discover -s tests -v` — failed because the preview cue markup/style was absent. During GREEN, one Python assertion initially rejected a valid CSS animation declaration without its optional trailing semicolon; the assertion was corrected to accept the valid form. GREEN: `node --test tests/test_preview_swipe_cue.js` — 2 tests passed; `python3 -m unittest discover -s tests -v` — 4 tests passed; `git diff --check` — passed. Browser check at 390 × 844 showed the animated glyph at the preview hint, retained the fixed mobile CTA, and reported document width 375px (no horizontal overflow); a click on the actual preview dismissed the cue (`is-animated` removed and `is-dismissed` added). Reduced-motion at load and preference changes mid-cue are covered by the Node lifecycle tests; browser-level motion emulation was unavailable in this pass. No checkout action was performed. Authored source/test changes: 166 lines changed (additions plus deletions; generated files excluded).
+
+**Rollback boundary:** Revert T2's `index.html`, `script.js`, `styles.css`, `tests/test_author_section.py`, and `tests/test_preview_swipe_cue.js` changes together to remove the cue and its regression coverage; leave the T1 author/CTA behavior, `.gitignore`, and `.engram/` untouched.
+
+**Commit evidence:** pending; commit the T2 source/tests with this task document as one Conventional Commit, then record its identity here.
 
 ## Next step
 
-After the parent reads back this task document and its Engram mirror, implement T1 then T2 test-first. Update this document and mirror after each task with observed outcomes, exact checks, and commit identities. Do not push or create a PR.
+T1 and T2 are implemented and verified; T1 is committed. Record the T2 commit identity in this document and full Engram mirror after committing. Then parent performs the T2 RDD assessment. Do not push or create a PR.

@@ -155,3 +155,17 @@ a.header-buy{min-height:62px;padding:17px 26px!important}
   .mobile-buy{justify-content:flex-end}
   .mobile-buy>span{display:none}
 }
+
+/* Animate only the hint glyph, never the flipbook surface or its scroll area. */
+.preview-swipe-cue{display:inline-flex;align-items:center;margin-right:.4em;color:var(--yellow);font-size:1.25em;font-weight:700;vertical-align:middle}
+.preview-swipe-cue.is-animated{animation:preview-swipe-cue-nudge 1.35s ease-in-out .2s 1}
+.preview-swipe-cue.is-dismissed{visibility:hidden;opacity:0}
+@keyframes preview-swipe-cue-nudge{
+  0%,100%{transform:translateX(0)}
+  24%{transform:translateX(-5px)}
+  52%{transform:translateX(5px)}
+  78%{transform:translateX(-2px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .preview-swipe-cue.is-animated{animation:none!important}
+}

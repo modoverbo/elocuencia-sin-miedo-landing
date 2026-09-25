@@ -15,6 +15,16 @@
   const zoom = byId('page-zoom');
   const zoomImage = byId('zoom-image');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const swipeCue = byId('preview-swipe-cue');
+  let swipeCueActive = Boolean(swipeCue && !reducedMotion.matches);
+  if (swipeCueActive) swipeCue.classList.add('is-animated');
+
+  function stopSwipeCue() {
+    if (!swipeCueActive) return;
+    swipeCueActive = false;
+    swipeCue.classList.remove('is-animated');
+    swipeCue.classList.add('is-dismissed');
+  }
 
   if (!window.St || !St.PageFlip) {
     counter.textContent = 'Muestra temporalmente no disponible';
@@ -92,19 +102,23 @@
   }
 
   next.addEventListener('click', () => {
+    stopSwipeCue();
     if (isFlipping || pageFlip.getCurrentPageIndex() >= PREVIEW_LAST_PAGE - 1) return;
     flipFromButton(1);
   });
   previous.addEventListener('click', () => {
+    stopSwipeCue();
     if (!isFlipping && pageFlip.getCurrentPageIndex() > 0) flipFromButton(-1);
   });
   replay.addEventListener('click', () => {
+    stopSwipeCue();
     if (isFlipping) return;
     pageFlip.turnToPage(0);
     updateControls(0);
   });
 
   bookElement.addEventListener('pointerdown', (event) => {
+    stopSwipeCue();
     pointerStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
   }, true);
   bookElement.addEventListener('pointermove', (event) => {
@@ -133,6 +147,7 @@
     openZoom(event.target.closest('.preview-page'));
   });
   bookElement.addEventListener('keydown', (event) => {
+    stopSwipeCue();
     if (event.key !== 'Enter' && event.key !== ' ') return;
     const leaf = event.target.closest('.preview-page');
     if (!leaf) return;
@@ -147,6 +162,7 @@
     if (document.hidden && zoom.open) zoom.close();
   });
   reducedMotion.addEventListener('change', ({ matches }) => {
+    if (matches) stopSwipeCue();
     pageFlip.getSettings().flippingTime = matches ? 120 : 760;
   });
 })();
