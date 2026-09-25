@@ -128,7 +128,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **GREEN:** Focused testimonial suite — 7 passed. Final `python3 -m unittest discover -s tests -v` — 34 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Desktop capsule avatars use one-third scale of the same sprite; mobile uses a 213×426px sprite scale for 24px portrait crops. Parent visual confirmation remains pending; this writer did not use a browser.
 
-**Commit evidence:** pending the correction work-unit commit.
+**Commit evidence:** `75791c827d21bac5c80303fdfb840bdd71f95ba7` — `fix(landing): improve testimonial badge legibility` on `codex/reference-inspired-ebook-landing`.
 
 ### T5 — Remaining reference-inspired section flow
 
