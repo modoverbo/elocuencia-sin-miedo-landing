@@ -128,7 +128,7 @@ a.button.hotmart-fb,a.header-buy.hotmart-fb{font-family:Poppins,Arial,sans-serif
 .author-portrait{border-radius:50%;border:none;box-shadow:none}
 .author-photo-label{position:absolute;left:-15px;bottom:22px;padding:11px 15px;background:var(--yellow);color:var(--ink);font-size:9px;font-weight:700;letter-spacing:.12em;box-shadow:0 8px 20px rgba(0,0,0,.2)}
 .author-book-illustration{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;background:var(--paper)}
-.generated-image-caption{margin-top:14px;color:#e0dfd7;font-size:11px;line-height:1.5}
+.generated-image-caption{display:inline-block;max-width:100%;margin-top:14px;padding:8px 12px;background:var(--ink);color:var(--paper);font-size:11px;line-height:1.5}
 .author-copy{max-width:660px}
 .author-copy .tiny-label{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid rgba(237,205,82,.5);letter-spacing:.12em}
 .author-copy h2{font-size:clamp(42px,4.8vw,70px);max-width:620px}

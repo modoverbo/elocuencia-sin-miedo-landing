@@ -284,6 +284,15 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertIn('src="assets/arturo-modoverbo.png"', hero)
         self.assertNotIn("arturo-valdez-holding-elocuencia-sin-miedo.png", hero)
 
+    def test_generated_image_caption_has_a_dark_contrast_surface(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        caption_rule = re.search(r"\.generated-image-caption\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(caption_rule)
+        declarations = caption_rule.group(1)
+        self.assertRegex(declarations, r"background\s*:\s*var\(--ink\)")
+        self.assertRegex(declarations, r"color\s*:\s*var\(--paper\)")
+        self.assertRegex(declarations, r"padding\s*:")
+
 
 if __name__ == "__main__":
     unittest.main()
