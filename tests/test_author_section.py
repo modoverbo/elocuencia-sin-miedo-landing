@@ -112,9 +112,10 @@ class AuthorSectionTests(unittest.TestCase):
         caption = re.search(r"\.stage-caption\s*\{([^{}]*)\}", css)
         self.assertIsNotNone(caption, "Preview caption needs a layout rule that separates its labels")
         declarations = dict(
-            declaration.split(":", 1)
+            (key.strip(), value.strip())
             for declaration in caption.group(1).split(";")
             if ":" in declaration
+            for key, value in [declaration.split(":", 1)]
         )
         self.assertEqual(declarations.get("display"), "flex")
         self.assertEqual(declarations.get("gap"), "12px")
@@ -136,20 +137,20 @@ class AuthorSectionTests(unittest.TestCase):
 
         sticky_header = re.search(r"\.site-header\s*\{([^{}]*)\}", css)
         self.assertIsNotNone(sticky_header)
-        self.assertIn("position:sticky", sticky_header.group(1))
-        self.assertIn("top:0", sticky_header.group(1))
+        self.assertRegex(sticky_header.group(1), r"position\s*:\s*sticky")
+        self.assertRegex(sticky_header.group(1), r"top\s*:\s*0")
         post_hero_bar = re.search(r'<div class="mobile-buy"[^>]*id="post-hero-buy"[^>]*>', html)
         self.assertIsNotNone(post_hero_bar)
         for attribute in ('hidden', 'inert', 'aria-hidden="true"'):
             self.assertIn(attribute, post_hero_bar.group(0))
-        self.assertIn(".mobile-buy[hidden]{display:none!important}", css)
-        self.assertIn(".mobile-buy:not([hidden]){display:flex;", css)
-        self.assertIn(".mobile-buy:not([hidden]){display:grid;", css)
+        self.assertRegex(css, r"\.mobile-buy\[hidden\]\s*\{[^}]*display\s*:\s*none")
+        self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*display\s*:\s*flex")
+        self.assertRegex(css, r"@media\s*\(max-width:\s*760px\)[\s\S]*?\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*display\s*:\s*grid")
         self.assertIn('id="preview-controls"', html)
         self.assertIn('id="site-footer"', html)
         self.assertIn('id="preview-next"', html)
         self.assertIn('id="footer-purchase-cta"', html)
-        self.assertIn("@media(prefers-reduced-motion:reduce)", css)
+        self.assertRegex(css, r"@media\s*\(prefers-reduced-motion:\s*reduce\)")
 
     def test_editorial_brand_uses_green_gold_palette_and_display_swap_fonts(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -157,9 +158,10 @@ class AuthorSectionTests(unittest.TestCase):
         root_tokens = re.search(r":root\s*\{([^{}]*)\}", css)
         self.assertIsNotNone(root_tokens)
         declarations = dict(
-            declaration.split(":", 1)
+            (key.strip(), value.strip())
             for declaration in root_tokens.group(1).split(";")
             if ":" in declaration
+            for key, value in [declaration.split(":", 1)]
         )
         expected_tokens = {
             "--petroleum": "#0F3D3A",
@@ -174,11 +176,11 @@ class AuthorSectionTests(unittest.TestCase):
                 self.assertEqual(declarations.get(token), color)
 
         self.assertRegex(html, r"fonts\.googleapis\.com/css2\?family=Playfair\+Display[^\"]*Montserrat[^\"]*display=swap")
-        self.assertIn("font-family:var(--sans)", css)
-        self.assertIn("font-family:var(--serif)", css)
+        self.assertRegex(css, r"font-family\s*:\s*var\(--sans\)")
+        self.assertRegex(css, r"font-family\s*:\s*var\(--serif\)")
         self.assertNotRegex(f"{html}\n{css}", r"(?i)poppins|--yellow|#f9db43|#ddaa19|#f3d75b|#ffde4b")
-        self.assertRegex(css, r"\.hero\s*\{[^}]*background:[^}]*var\(--petroleum\)")
-        self.assertRegex(css, r"\.preview\s*\{[^}]*background:var\(--petroleum\)")
+        self.assertRegex(css, r"\.hero\s*\{[^}]*background\s*:\s*var\(--paper\)")
+        self.assertRegex(css, r"\.preview\s*\{[^}]*background\s*:\s*var\(--forest\)")
         for color in ("#f9db43", "#ddaa19", "#ba8100", "#866b10", "#fff6d8", "#dcbf42", "#edcd52"):
             self.assertNotIn(color, f"{html}\n{css}")
 
@@ -186,7 +188,7 @@ class AuthorSectionTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         manifest = json.loads((ROOT / "assets/edition/preview-manifest.json").read_text(encoding="utf-8"))
         preview_start = html.index('<section class="preview ')
-        preview_end = html.index('<section class="inside ', preview_start)
+        preview_end = html.index('<section class="benefits ', preview_start)
         preview_markup = html[preview_start:preview_end]
 
         expected_assets = ["assets/edition/cover.webp"] + [
@@ -209,7 +211,7 @@ class AuthorSectionTests(unittest.TestCase):
         ]
         self.assertEqual(page_assets, list(enumerate(expected_assets, start=1)))
         self.assertIn('content="assets/edition/cover.webp"', html)
-        self.assertIn('href="assets/edition/cover.webp"', html)
+        self.assertIn('src="assets/edition/cover.webp"', html)
         self.assertGreaterEqual(html.count('src="assets/edition/cover.webp"'), 2)
         for path in expected_assets:
             with self.subTest(path=path):
@@ -218,55 +220,30 @@ class AuthorSectionTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue((ROOT / "assets/edition" / path).is_file())
 
-    def test_reader_opinions_anchor_targets_accessible_truthful_empty_state(self):
+    def test_reader_opinions_remain_absent_until_authorized_content_exists(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        review_link = re.search(
-            r'<a class="review-link" href="#resenas"[^>]*>(.*?)</a>', html, re.DOTALL
-        )
-        self.assertIsNotNone(review_link, "Expected a neutral hero link to the local reviews section")
-        self.assertIn("Opiniones de lectores", re.sub(r"<[^>]+>", "", review_link.group(1)))
-        self.assertNotIn("button", review_link.group(0))
-
-        parsed = SalesLandingParser()
-        parsed.feed(html)
-        sections_by_id = {section["attributes"].get("id"): section for section in parsed.sections}
-        reviews = sections_by_id.get("resenas")
-        self.assertIsNotNone(reviews, "Expected the reader-opinions empty-state section")
-        self.assertEqual(reviews["attributes"].get("aria-labelledby"), "resenas-title")
-        self.assertEqual(reviews["attributes"].get("tabindex"), "-1")
-        copy = " ".join(reviews["text"]).lower()
-        self.assertIn("no se muestran reseñas", copy)
-        self.assertIn("autorización", copy)
-        self.assertNotRegex(copy, r"(?:⭐|★|\b[1-5]\s*(?:estrellas?|/5)|\b\d+\s+(?:reseñas?|opiniones|lectores?))")
-        self.assertEqual(reviews["images"], [])
-        self.assertNotIn("<blockquote", html.lower())
-        self.assertNotIn('class="review-card', html.lower())
-        self.assertRegex(css, r"#resenas\s*\{[^}]*scroll-margin-top\s*:")
-        self.assertRegex(css, r"#resenas:focus-visible\s*\{[^}]*outline")
-
-    def test_landing_sections_follow_sales_flow_with_sequential_kickers(self):
+        self.assertNotIn('href="#resenas"', html)
+        self.assertNotIn('id="resenas"', html)
+        self.assertNotRegex(html.lower(), r"opiniones de lectores|reseñas|review-card|<blockquote")
+        self.assertNotRegex(html, r"(?:⭐|★|\b[1-5]\s*(?:estrellas?|/5)|\b\d+\s+(?:reseñas?|opiniones|lectores?))")
+    def test_landing_sections_follow_the_reference_sales_flow(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
         parsed.feed(html)
 
-        expected_order = ["hero", "recognition", "journey", "preview", "inside", "fit", "offer", "reviews", "author", "faq", "closing"]
+        expected_order = ["hero", "facts", "recognition", "method", "statement", "preview", "benefits", "offer", "author", "faq", "closing"]
         actual_order = [
-            next(
-                name
-                for name in expected_order
-                if name in section["attributes"].get("class", "").split()
-            )
+            next(name for name in expected_order if name in section["attributes"].get("class", "").split())
             for section in parsed.sections
         ]
         self.assertEqual(actual_order, expected_order)
 
-        kicker_numbers = []
-        for section in parsed.sections:
-            match = re.search(r"\b(\d{2})\s*/", " ".join(section["text"]))
-            kicker_numbers.append(match.group(1) if match else None)
-        self.assertEqual(kicker_numbers, [f"{number:02d}" for number in range(1, 12)])
-
+        method = next(section for section in parsed.sections if "method" in section["attributes"].get("class", "").split())
+        self.assertEqual(html.count('class="method-card'), 4)
+        self.assertIn("Escuchar", " ".join(method["text"]))
+        self.assertIn("Ordenar", " ".join(method["text"]))
+        self.assertIn("Practicar", " ".join(method["text"]))
+        self.assertIn("Aplicar", " ".join(method["text"]))
     def test_landing_sections_have_unique_ids_and_internal_links_resolve(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
@@ -292,39 +269,33 @@ class AuthorSectionTests(unittest.TestCase):
             )
         )
 
-    def test_hero_book_image_uses_an_arch_frame(self):
+    def test_hero_uses_a_compact_centered_original_portrait(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        hero_frame = re.search(r"\.hero-photo-frame\s*\{([^{}]*)\}", css)
-        self.assertIsNotNone(hero_frame, "Expected an editorial arch around the hero book image")
-        declarations = dict(
-            declaration.split(":", 1)
-            for declaration in hero_frame.group(1).split(";")
-            if ":" in declaration
-        )
-        self.assertRegex(declarations.get("border-radius", ""), r"48%")
-        self.assertIn("var(--gold)", declarations.get("border", ""))
-
-    def test_sales_hero_leads_and_identifies_author_with_portrait(self):
+        hero = html[html.index('<section class="hero"'):html.index('</section>', html.index('<section class="hero"'))]
+        self.assertIn('src="assets/arturo-modoverbo.png"', hero)
+        self.assertIn('alt="Arturo Valdéz, autor de Elocuencia sin miedo"', hero)
+        self.assertNotIn("hero-book-photo", hero)
+        frame = re.search(r"\.hero-portrait-frame\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(frame)
+        self.assertIn("50%", frame.group(1))
+        self.assertIn("var(--gold)", frame.group(1))
+        self.assertRegex(frame.group(1), r"width\s*:\s*(?:clamp|\d{2,3}px)")
+    def test_sales_hero_centers_original_portrait_headline_and_primary_cta(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
         parsed.feed(html)
         hero = next(section for section in parsed.sections if "hero" in section["attributes"].get("class", "").split())
-        author = next(section for section in parsed.sections if "author" in section["attributes"].get("class", "").split())
         self.assertEqual(parsed.sections[0], hero)
-        self.assertGreater(parsed.sections.index(author), parsed.sections.index(hero))
         self.assertIn("Arturo Valdéz", " ".join(hero["text"]))
-        book_photo = next(image for image in hero["images"] if "hero-book-photo" in image.get("class", ""))
-        self.assertTrue((ROOT / book_photo["src"]).is_file())
-        self.assertEqual(book_photo.get("alt"), "Arturo Valdéz sosteniendo Elocuencia sin miedo")
-        hero_text = " ".join(hero["text"])
-        self.assertIn("Habla con claridad.", hero_text)
-        self.assertIn("Conecta con las personas.", hero_text)
-        self.assertIn("Haz que tus ideas importen.", hero_text)
-        hero_markup = html[html.index('<section class="hero"'):html.index("</section>")]
-        self.assertLess(hero_markup.index('class="hero-book-photo"'), hero_markup.index("<h1 id=\"hero-title\""))
-        self.assertNotIn('class="floating-note"', hero_markup)
+        hero_text = re.sub(r"\s+", " ", " ".join(hero["text"]))
+        self.assertIn("Habla con claridad", hero_text)
+        self.assertIn("Quiero hablar con claridad", hero_text)
+        portrait = next(image for image in hero["images"] if "hero-portrait" in image.get("class", ""))
+        self.assertEqual(portrait.get("src"), "assets/arturo-modoverbo.png")
+        self.assertTrue((ROOT / portrait["src"]).is_file())
+        self.assertIn("hero-author-caption", html)
         self.assertNotRegex(html, r"(?i)(20 años|50[ .]?000 personas|50 mil personas)")
-
     def test_primary_purchase_cta_repeats_across_sections_and_offer_states_owner_terms(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
@@ -353,30 +324,20 @@ class AuthorSectionTests(unittest.TestCase):
             self.assertIn(term, offer_text)
         self.assertNotRegex(offer_text, r"(?:\$|\b\d+[.,]\d{2}\b)")
 
-    def test_primary_ctas_are_prominent_and_mobile_copy_is_benefit_led(self):
+    def test_primary_ctas_are_prominent_and_header_cta_stays_on_small_screens(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        mobile_cta = re.search(r'<div class="mobile-buy"[^>]*>(.*?)</div>', html, re.DOTALL)
-        self.assertIsNotNone(mobile_cta)
-        self.assertIn("Quiero hablar con claridad", mobile_cta.group(1))
-        self.assertRegex(
-            css,
-            r"a\.button\.button-dark,\s*a\.button\.button-yellow,\s*a\.header-buy\s*\{[^}]*min-height\s*:\s*6[2-9]px",
-        )
-        self.assertRegex(
-            css,
-            r"\.hero-actions\s*>\s*a\.button-outline\s*\{[^}]*min-height\s*:\s*5[0-9]px",
-        )
-        self.assertRegex(
-            css,
-            r"\.preview-controls\s+button\s*\{[^}]*min-height\s*:\s*4[0-9]px",
-        )
-
+        header_cta = re.search(r'<a class="header-buy[^>]*>(.*?)</a>', html, re.DOTALL)
+        self.assertIsNotNone(header_cta)
+        self.assertIn("Quiero hablar con claridad", header_cta.group(1))
+        self.assertRegex(css, r"\.header-buy\s*\{[^}]*min-height\s*:\s*44px")
+        self.assertRegex(css, r"\.preview-controls\s+button\s*\{[^}]*min-height\s*:\s*4[0-9]px")
+        self.assertNotRegex(css, r"@media\s*\(max-width:\s*(?:380|440)px\)[\s\S]*?\.header-buy\s*\{[^}]*display\s*:\s*none")
     def test_author_layout_collapses_to_one_column_on_mobile(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         self.assertRegex(
             css,
-            r"@media\(max-width:760px\)[\s\S]*?\.author-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
+            r"@media\s*\(max-width:\s*760px\)[\s\S]*?\.section-heading,\s*\.preview-grid,\s*\.offer-card,\s*\.author-grid,\s*\.faq-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
         )
 
     def test_preview_hint_contains_a_reduced_motion_aware_swipe_cue(self):
@@ -390,7 +351,7 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*position\s*:\s*absolute")
         self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*pointer-events\s*:\s*none")
         self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*infinite")
-        reduced_motion_rules = re.findall(r"@media\(prefers-reduced-motion:reduce\)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", css)
+        reduced_motion_rules = re.findall(r"@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", css)
         self.assertTrue(reduced_motion_rules)
         self.assertRegex(
             "\n".join(reduced_motion_rules),
@@ -401,42 +362,27 @@ class AuthorSectionTests(unittest.TestCase):
             r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*transition\s*:\s*none",
         )
 
-    def test_mobile_banner_keeps_accessible_wordmark_and_checkout_action(self):
+    def test_mobile_header_keeps_brand_and_checkout_action(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = MobileBrandParser()
         parsed.feed(html)
-
         self.assertEqual(len(parsed.header_wordmarks), 1)
         self.assertEqual(parsed.header_wordmarks[0].get("href"), "#inicio")
         self.assertEqual(parsed.header_wordmarks[0].get("aria-label"), "Elocuencia sin miedo, inicio")
         self.assertEqual(len(parsed.banner_links), 2)
-
-        brand = parsed.banner_links[0]["attributes"]
-        action = parsed.banner_links[1]["attributes"]
-        self.assertIn("wordmark", brand.get("class", "").split())
-        self.assertEqual(brand.get("href"), "#inicio")
-        self.assertEqual(brand.get("aria-label"), "Elocuencia sin miedo, inicio")
-        self.assertEqual("".join(parsed.banner_links[1]["text"]).strip(), "Quiero hablar con claridad")
-        self.assertIn("hotmart__button-checkout", action.get("class", "").split())
-        self.assertTrue(action.get("href", "").startswith("https://pay.hotmart.com/"))
-
-    def test_supplied_book_holding_image_leads_hero_and_neutral_portrait_stays_deeper(self):
+        self.assertIn("Quiero hablar con claridad", html[html.index('<header'):html.index('</header>')])
+    def test_supplied_book_holding_image_is_in_later_author_section(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         author_start = html.index('<section class="author ')
         author_end = html.index("</section>", author_start)
         author_markup = html[author_start:author_end]
         hero = html[html.index('<section class="hero"'):author_start]
-
         self.assertTrue((ROOT / "assets/edition/arturo-holding-book.webp").is_file())
-        self.assertRegex(
-            hero,
-            r'<img class="hero-book-photo" src="assets/edition/arturo-holding-book\.webp"[^>]*alt="Arturo Valdéz sosteniendo Elocuencia sin miedo"[^>]*>',
-        )
-        self.assertIn('src="assets/arturo-modoverbo.png"', author_markup)
-        self.assertIn('alt="Arturo Valdéz, autor de Elocuencia sin miedo"', author_markup)
+        self.assertNotIn('src="assets/edition/arturo-holding-book.webp"', hero)
+        self.assertIn('src="assets/edition/arturo-holding-book.webp"', author_markup)
+        self.assertIn('alt="Arturo Valdéz sosteniendo Elocuencia sin miedo"', author_markup)
+        self.assertIn('src="assets/arturo-modoverbo.png"', hero)
         self.assertNotIn("arturo-valdez-holding-elocuencia-sin-miedo.png", html)
-        self.assertNotIn("generated-image-caption", html)
-
     def test_offer_mockup_is_explicitly_labeled_digital_pdf(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         offer = html[html.index('<section class="offer '):html.index('<section class="author ')]
@@ -446,6 +392,26 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertIn("Pago único", offer)
         self.assertIn("Acceso inmediato", offer)
         self.assertIn("7 días de garantía", offer)
+
+    def test_all_non_preview_images_are_responsive_and_inside_layout_has_no_fixed_height_frames(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        global_image_rule = re.search(r"(?s)(?:^|})\s*img\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(global_image_rule)
+        self.assertRegex(global_image_rule.group(1), r"max-width\s*:\s*100%")
+        self.assertRegex(global_image_rule.group(1), r"height\s*:\s*auto")
+        self.assertNotRegex(css, r"\.inside-image\s*,\s*\.inside-text\s*\{[^}]*height\s*:")
+        self.assertNotIn('class="inside-image', html)
+        self.assertEqual(html.count('class="method-card'), 4)
+        self.assertRegex(css, r"\.method-card\s*\{[^}]*border\s*:\s*1px\s+solid[^}]*var\(--gold\)")
+
+    def test_footer_is_a_stacked_grid_with_no_colliding_right_side_cluster(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        footer = html[html.index('<footer'):html.index('</footer>')]
+        self.assertIn('id="site-footer"', footer)
+        self.assertNotIn('class="footer-right"', footer)
+        self.assertRegex(css, r"\.footer-inner\s*\{[^}]*display\s*:\s*grid")
 
 
 if __name__ == "__main__":
