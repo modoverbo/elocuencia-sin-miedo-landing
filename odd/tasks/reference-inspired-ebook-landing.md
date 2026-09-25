@@ -89,6 +89,8 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Responsive QA follow-up:** A later review observed the light caption text crossing the yellow rotated author-photo background at 320px and 390px. Added a dark `var(--ink)` caption surface with `var(--paper)` text and padding; the focused regression test fails before this CSS and passes after it. Full Python suite — 12 passed; Node preview suite — 4 passed; `git diff --check` — passed. Parent will perform the post-fix visual recheck at 320px / 390px / 1280px; 1280px post-fix appearance is not yet verified here. No changes to the illustration or section layout.
 
+**Responsive caption correction commit:** `f2cf2f9630bd06266944c78f077f9238bbb0f821` — `fix(landing): improve generated image caption contrast`.
+
 **Commit evidence:** `db5016cb0750f97d98c80485381d1695ab1f3bb0` — `feat(landing): add disclosed author book illustration` on `codex/reference-inspired-ebook-landing`.
 
 ### T4 — Real testimonial presentation
@@ -121,4 +123,4 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ## Next step
 
-T1–T3 and T5 are committed; T5’s implementation and verification are complete. The caption contrast correction is implemented and automated checks pass; parent visual recheck at 320px / 390px / 1280px remains pending. Earlier exact crop checks were unavailable to the implementation writer; the recorded image-ratio, structural, and browser evidence remains above. T4 remains blocked until real attributable testimonial material and permission/context are supplied. The user approved `single-pr` with a `size:exception` for this new feature. No PR, push, merge, or deployment is authorized.
+T1–T3 and T5 are committed; T5’s implementation and verification are complete. Caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` is implemented and automated checks pass; parent visual recheck at 320px / 390px / 1280px remains pending. Earlier exact crop checks were unavailable to the implementation writer; the recorded image-ratio, structural, and browser evidence remains above. T4 remains blocked until real attributable testimonial material and permission/context are supplied. The user approved `single-pr` with a `size:exception` for this new feature. No PR, push, merge, or deployment is authorized.
