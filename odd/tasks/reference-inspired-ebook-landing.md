@@ -266,8 +266,8 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **GREEN:** `python3 -m unittest discover -s tests -v` — 25 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Set stylesheet URL to `styles.css?v=20260925-reference-v3`; changed only stylesheet and its guard test. No browser QA was performed by this worker. Final 320×740, 390×844, 384×824, and 1280×800 checks remain pending parent verification.
 
-**Commit evidence:** pending.
+**Commit evidence:** `1d37ed0426e6ca6d8170eb710f8506ac6e3ea15d` — `fix(landing): align final conversion details with reference` on `codex/reference-inspired-ebook-landing`.
 
 ## Next step
 
-T10 and its stylesheet cache fix are committed as `169657c` and `bd7ec48`; T11 reference alignment refinements are functionally verified and awaiting commit evidence in this document. Parent must verify the final page and interactive preview at 320×740, 390×844, 384×824, and 1280×800 before treating the final design as visually validated. Parent pre-refinement 384px checks are recorded under T11. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 and its stylesheet cache fix are committed as `169657c` and `bd7ec48`; T11 reference alignment is committed as `1d37ed0`. Parent must verify the final page and interactive preview at 320×740, 390×844, 384×824, and 1280×800 before treating the final design as visually validated. Parent pre-refinement 384px checks are recorded under T11. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
