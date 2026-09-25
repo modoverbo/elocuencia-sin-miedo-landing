@@ -93,15 +93,26 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Commit evidence:** `db5016cb0750f97d98c80485381d1695ab1f3bb0` — `feat(landing): add disclosed author book illustration` on `codex/reference-inspired-ebook-landing`.
 
-### T4 — Attributable testimonial content (blocked)
+### T4 — Publish owner-supplied attributable testimonials
 
-- [ ] Add review cards or quotes only after the owner supplies real attributable customer wording and explicit permission/context to identify and publish it.
-- [ ] Do not add ratings, counts, stars, avatars/photos, outcomes, or endorsements without matching authorized source evidence.
-- [x] Keep T4 blocked and display no testimonial content until the evidence is supplied; the T9 neutral empty state is not social proof.
+- [x] Add a small clickable social-proof capsule above Arturo’s original solo hero portrait, linking to `#resenas`; use only four supplied reader portraits, five-star marks, and the neutral label “4 testimonios de lectores” / “Leer testimonios”.
+- [x] Add the four owner-supplied testimonial cards in a new `#resenas` section after the offer and before the author section, preserving each quote and attribution verbatim; use only the portrait pixels from the supplied screenshot.
+- [x] Use responsive editorial styling consistent with the green/gold/ivory brand, with desktop grid and mobile stack; keep header, hero, preview, offer, author and existing CTAs intact.
+- [x] Add regression coverage for capsule navigation, section ordering/anchor, all four exact quotes and name/role/age attributions, local portrait asset, and absence of unsupported aggregate rating/count claims.
 
-**Acceptance criteria:** every displayed quote/card is attributable to supplied source material and permission and is not embellished; no invented stars, ratings, counts, people, images, or outcome claims.
+**Acceptance criteria:** all displayed testimonial wording, identities, supplied portraits, ages, professions, and five-star ratings match the owner-provided source and explicit publication permission; no verified-purchase assertion, aggregate rating, unsupported count, or guaranteed outcome is added. The capsule points to a unique `#resenas` section located between offer and author. Existing interactive preview, book, offer, header and CTA behavior remains intact.
 
-**Dependency:** real approved testimonial material from the owner. This content task remains blocked until supplied; T9 may add only a truthful, empty review destination without it.
+**Dependency / authorization:** owner supplied the real testimonial screenshot and explicitly authorized publication of its four review texts, names, portraits, ages, professions, and five-star ratings. Screenshot source: `/tmp/codex-clipboard-b605b012-025e-444c-9c0a-625982582ba6.png`.
+
+**Route and trigger evidence:** delegated direct writer; implementation spans non-trivial page markup, responsive styling, regression tests, and a copied source-photo asset. Strict TDD is enabled; test first, observe RED, then implementation. RDD remains disabled; do not run native review or alter its setting. No checkout click, push, PR, or deployment.
+
+**Progress / verification:** Implemented the hero capsule and the responsive `#resenas` grid between offer and author. Added the four exact owner-provided quote strings and uppercase name/profession/age metadata; each card displays its supplied five-star rating. Copied `/tmp/codex-clipboard-b605b012-025e-444c-9c0a-625982582ba6.png` unchanged as `assets/testimonials-readers.png`; SHA-256 is `a3527a63f72d6d82e2acf8d368c06b568f7876100520b053940381c3f47453ae` for both source and repository asset. Cache-busted stylesheet URL advances to v5. No unsupported aggregate rating/count, verified-purchase claim, or guaranteed outcome was added.
+
+**RED:** Before implementation, `python3 -m unittest discover -s tests -p 'test_testimonials.py' -v` — 5 tests, 4 expected failures/errors due to the missing hero link, section, and mobile grid (unsupported figures guard passed).
+
+**GREEN:** Focused new suite — 5 passed. Final `python3 -m unittest discover -s tests -v` — 32 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Parent owns browser visual QA; this writer did not open a browser or click checkout. RDD stayed disabled; no review, remote action, PR, push, or deployment.
+
+**Commit evidence:** to be recorded after the verified work-unit commit.
 
 ### T5 — Remaining reference-inspired section flow
 
@@ -307,8 +318,8 @@ The parent reports the final v4 stylesheet loaded. This record separates full sc
 
 Additional parent checks: FAQ expanded to its supplied answer; footer purchase bar remained hidden and did not collide. Reduced-motion behavior is supported by the existing CSS/Node tests only; no browser reduced-motion check was reported. No live checkout was clicked. No real physical-touch test was performed. The page/section screenshots do not cover every section at each viewport.
 
-**Status:** T10/T11/T12 visual and functional evidence is recorded at the scope above. Final owner visual acceptance remains the next step; publication/deployment is not authorized. T4 remains blocked and no reader reviews are displayed.
+**Status:** T10/T11/T12 visual and functional evidence is recorded at the scope above. T4 now contains the owner-authorized reader testimonials; parent visual QA remains pending. Publication/deployment is not authorized.
 
 ## Next step
 
-T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`; parent final v4 browser evidence is recorded above, including the 320px `#inicio` offset and 384px / 390px / 1280px layout checks. The next step is owner visual acceptance. No live checkout, physical-touch, or reduced-motion browser test is claimed; publication/deployment remains unauthorized. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied, and no review content is shown. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`; parent final v4 browser evidence is recorded above, including the 320px `#inicio` offset and 384px / 390px / 1280px layout checks. The next step is parent visual acceptance of the newly added T4 hero capsule and testimonials. No browser check, live checkout, physical-touch, or reduced-motion check is claimed; publication/deployment remains unauthorized. T4 automated implementation checks pass as detailed above. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.

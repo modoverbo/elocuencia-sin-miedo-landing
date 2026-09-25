@@ -111,7 +111,7 @@ class SalesLandingParser(HTMLParser):
 class AuthorSectionTests(unittest.TestCase):
     def test_landing_stylesheet_url_has_a_cache_busting_version(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('href="styles.css?v=20260925-reference-v4"', html)
+        self.assertIn('href="styles.css?v=20260925-reference-v5"', html)
 
     def test_hash_navigation_reserves_space_beneath_sticky_header(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
@@ -288,18 +288,18 @@ class AuthorSectionTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue((ROOT / "assets/edition" / path).is_file())
 
-    def test_reader_opinions_remain_absent_until_authorized_content_exists(self):
+    def test_authorized_reader_opinions_have_a_destination_and_not_an_invented_aggregate(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn('href="#resenas"', html)
-        self.assertNotIn('id="resenas"', html)
-        self.assertNotRegex(html.lower(), r"opiniones de lectores|reseñas|review-card|<blockquote")
-        self.assertNotRegex(html, r"(?:⭐|★|\b[1-5]\s*(?:estrellas?|/5)|\b\d+\s+(?:reseñas?|opiniones|lectores?))")
+        self.assertIn('href="#resenas"', html)
+        self.assertIn('id="resenas"', html)
+        self.assertEqual(html.count("class=\"testimonial-card\""), 4)
+        self.assertNotRegex(html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|más de 1200)\b")
     def test_landing_sections_follow_the_reference_sales_flow(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
         parsed.feed(html)
 
-        expected_order = ["hero", "facts", "recognition", "method", "statement", "preview", "benefits", "offer", "author", "faq", "closing"]
+        expected_order = ["hero", "facts", "recognition", "method", "statement", "preview", "benefits", "offer", "testimonials", "author", "faq", "closing"]
         actual_order = [
             next(name for name in expected_order if name in section["attributes"].get("class", "").split())
             for section in parsed.sections
@@ -326,16 +326,13 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertTrue(internal_targets)
         self.assertTrue(all(target in all_ids for target in internal_targets))
 
-    def test_testimonial_section_remains_absent_without_attributable_content(self):
+    def test_authorized_testimonial_section_is_between_offer_and_author(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
         parsed.feed(html)
-        self.assertFalse(
-            any(
-                "testimonial" in " ".join(section["attributes"].values()).lower()
-                for section in parsed.sections
-            )
-        )
+        sections = [section["attributes"].get("class", "").split() for section in parsed.sections]
+        self.assertLess(next(i for i, classes in enumerate(sections) if "offer" in classes), next(i for i, classes in enumerate(sections) if "testimonials" in classes))
+        self.assertLess(next(i for i, classes in enumerate(sections) if "testimonials" in classes), next(i for i, classes in enumerate(sections) if "author" in classes))
 
     def test_hero_uses_a_compact_centered_original_portrait(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -405,7 +402,7 @@ class AuthorSectionTests(unittest.TestCase):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         self.assertRegex(
             css,
-            r"@media\s*\(max-width:\s*760px\)[\s\S]*?\.section-heading,\s*\.preview-grid,\s*\.offer-card,\s*\.author-grid,\s*\.faq-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
+            r"@media\s*\(max-width:\s*760px\)[\s\S]*?\.section-heading,\s*\.preview-grid,\s*\.offer-card,\s*\.author-grid,\s*\.faq-grid,\s*\.testimonial-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
         )
 
     def test_preview_hint_contains_a_reduced_motion_aware_swipe_cue(self):
