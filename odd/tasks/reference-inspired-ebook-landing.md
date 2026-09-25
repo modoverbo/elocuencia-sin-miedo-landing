@@ -252,4 +252,4 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 ## Next step
 
-T10 implementation and functional checks are complete; close it with a Conventional Commit after final readback. Parent must verify the visual layout and preview at 320×740, 390×844, 384×824, and 1280×800 before treating the redesign as visually validated. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 source implementation and the cache-busting follow-up are committed as `169657c` and `bd7ec48`; task-document evidence is committed as `5c47f4e` and `ef11481`. Parent must verify the visual layout and preview at 320×740, 390×844, 384×824, and 1280×800 before treating the redesign as visually validated. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
