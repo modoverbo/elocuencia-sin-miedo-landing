@@ -109,7 +109,20 @@ class SalesLandingParser(HTMLParser):
 class AuthorSectionTests(unittest.TestCase):
     def test_landing_stylesheet_url_has_a_cache_busting_version(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('href="styles.css?v=20260925-reference-v3"', html)
+        self.assertIn('href="styles.css?v=20260925-reference-v4"', html)
+
+    def test_hash_navigation_reserves_space_beneath_sticky_header(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        document_rule = re.search(r"(?:^|})\s*html\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(document_rule)
+        self.assertRegex(document_rule.group(1), r"scroll-padding-top\s*:\s*80px")
+        self.assertRegex(document_rule.group(1), r"scroll-behavior\s*:\s*smooth")
+        reduced_motion = re.search(
+            r"@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}",
+            css,
+        )
+        self.assertIsNotNone(reduced_motion)
+        self.assertRegex(reduced_motion.group(1), r"html\s*\{[^}]*scroll-behavior\s*:\s*auto")
 
     def test_reference_alignment_uses_a_larger_responsive_hero_portrait(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")

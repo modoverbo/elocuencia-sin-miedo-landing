@@ -268,6 +268,22 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **Commit evidence:** `1d37ed0426e6ca6d8170eb710f8506ac6e3ea15d` — `fix(landing): align final conversion details with reference` on `codex/reference-inspired-ebook-landing`.
 
+## T12 — Offset hash navigation below sticky header (2026-09-25)
+
+**Root cause:** At 320px, loading the existing `#inicio` hash used the browser's default top alignment (0px) while the sticky header was about 63px tall. The hero's 32px top padding could not keep the portrait visible beneath it. The stylesheet rebuild had omitted a document-level scroll offset.
+
+**Parent browser QA before this correction:** At 320px, document scroll width was 305px with no section overlap or horizontal spill; all other checked final sections, proportions, footer, and preview/zoom worked. Rechecking the hash at 320px and 390px / 1280px remained pending with the parent. This worker did not use a browser.
+
+- [x] Reserve 80px above document-level hash targets while retaining smooth scrolling and the reduced-motion override.
+- [x] Add a regression assertion for the root scroll offset and verify the existing smooth/reduced-motion rules remain.
+- [x] Update stylesheet cache key to v4; no layout or interaction changes.
+
+**RED:** `python3 -m unittest discover -s tests -p 'test_author_section.py' -k hash_navigation -v` — failed because the root `html` rule had `scroll-behavior: smooth` but lacked `scroll-padding-top`.
+
+**GREEN:** Added `scroll-padding-top:80px` to the existing root rule; `styles.css?v=20260925-reference-v4`. Focused test passed; full Python suite — 26 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Reduced-motion continues to set `scroll-behavior:auto`. No browser QA is claimed by this worker. Parent will verify `#inicio` plus 390px / 1280px.
+
+**Commit evidence:** pending.
+
 ## Next step
 
-T10 and its stylesheet cache fix are committed as `169657c` and `bd7ec48`; T11 reference alignment is committed as `1d37ed0`. Parent must verify the final page and interactive preview at 320×740, 390×844, 384×824, and 1280×800 before treating the final design as visually validated. Parent pre-refinement 384px checks are recorded under T11. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and the pending T12 hash-offset commit. Parent has visually checked 320px sections and preview before the hash fix; the `#inicio` anchor recheck at 320px plus 390px / 1280px remains pending. Preserve parent browser evidence under T11/T12 and do not claim visual verification of the final hash offset until parent confirms. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
