@@ -1,5 +1,6 @@
 .vercel/
 .codegraph/
+.atl/
 node_modules/
 __pycache__/
 *.pyc
