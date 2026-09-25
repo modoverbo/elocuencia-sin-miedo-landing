@@ -240,6 +240,16 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **Commit evidence:** `169657c88e293516e868ee8c554e902e5a5cdba4` — `feat(landing): rebuild reference-inspired sales page` on `codex/reference-inspired-ebook-landing`.
 
+## T10 cache-busting corrective follow-up (2026-09-25)
+
+**Cause and scope:** Parent browser QA observed fresh HTML paired with the prior cached stylesheet in the already-open IAB tab. At 384px, that stale CSS hid the mobile header CTA and retained distorted portrait sizing. This follow-up changes only stylesheet cache identity plus its regression guard; no layout changes are included.
+
+**RED:** `python3 -m unittest discover -s tests -p 'test_author_section.py' -k stylesheet_url -v` — failed as expected because `index.html` used an unversioned `styles.css` URL.
+
+**GREEN:** Changed the landing stylesheet href to `styles.css?v=20260925-reference-v2`. `python3 -m unittest discover -s tests -v` — 20 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Parent owns browser revalidation; this follow-up makes no visual QA claim.
+
+**Commit evidence:** pending.
+
 ## Next step
 
 T10 implementation and functional checks are complete; close it with a Conventional Commit after final readback. Parent must verify the visual layout and preview at 320×740, 390×844, 384×824, and 1280×800 before treating the redesign as visually validated. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.

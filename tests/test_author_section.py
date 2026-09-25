@@ -107,6 +107,10 @@ class SalesLandingParser(HTMLParser):
 
 
 class AuthorSectionTests(unittest.TestCase):
+    def test_landing_stylesheet_url_has_a_cache_busting_version(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('href="styles.css?v=20260925-reference-v2"', html)
+
     def test_preview_caption_keeps_chapter_label_separate_from_page_counter(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         caption = re.search(r"\.stage-caption\s*\{([^{}]*)\}", css)
