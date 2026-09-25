@@ -250,6 +250,24 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **Commit evidence:** `bd7ec48752a579ad3af2bba7fd4ed86ab3f0f599` — `fix(landing): bust stale stylesheet cache` on `codex/reference-inspired-ebook-landing`.
 
+## T11 — Final reference alignment refinement (2026-09-25)
+
+**Parent browser QA before this refinement (384px only):** Confirmed the cache-busted v2 stylesheet loaded; the preview advances from page 1 to 2 and zoom on page 2 works, supplied images remain proportional, and all sections render without the previous overlap. This is parent-provided pre-refinement evidence, not QA of the final refinements. Final viewport checks remain pending.
+
+- [x] Increase the original circular hero portrait frame to 180px desktop, 160px through 600px, and 144px through 340px without changing section padding or circular crop.
+- [x] Stack the method cards in one column through 600px.
+- [x] Match the sticky purchase CTA treatment: ivory bar, forest-green wordmark and checkout button, fine gold edge; preserve hidden/inert lifecycle and protected-region behavior.
+- [x] Blend the mockup's white background into the ivory offer card with CSS `mix-blend-mode:multiply`; do not edit raster assets.
+- [x] Keep the header CTA at least 10px text and 44px touch height at 320px and 384px, wrapping within the available width.
+- [x] Normalize all Hotmart checkout links (including closing, footer, offer, and preview-lock actions) to a consistent green fill, gold border, ivory label, and no Hotmart gradient/shadow leak; keep footer CTA at least 44px. Do not alter functional preview navigation.
+- [x] Update the stylesheet cache key to v3 and add failing-first guards for each visual alignment.
+
+**RED:** `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` — 25 tests, 6 expected failures: stylesheet key, responsive portrait dimensions, one-column mobile method cards, mockup blending, shared CTA reset, and 320px header sizing.
+
+**GREEN:** `python3 -m unittest discover -s tests -v` — 25 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Set stylesheet URL to `styles.css?v=20260925-reference-v3`; changed only stylesheet and its guard test. No browser QA was performed by this worker. Final 320×740, 390×844, 384×824, and 1280×800 checks remain pending parent verification.
+
+**Commit evidence:** pending.
+
 ## Next step
 
-T10 source implementation and the cache-busting follow-up are committed as `169657c` and `bd7ec48`; task-document evidence is committed as `5c47f4e` and `ef11481`. Parent must verify the visual layout and preview at 320×740, 390×844, 384×824, and 1280×800 before treating the redesign as visually validated. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 and its stylesheet cache fix are committed as `169657c` and `bd7ec48`; T11 reference alignment refinements are functionally verified and awaiting commit evidence in this document. Parent must verify the final page and interactive preview at 320×740, 390×844, 384×824, and 1280×800 before treating the final design as visually validated. Parent pre-refinement 384px checks are recorded under T11. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.

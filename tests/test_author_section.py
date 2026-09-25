@@ -109,7 +109,56 @@ class SalesLandingParser(HTMLParser):
 class AuthorSectionTests(unittest.TestCase):
     def test_landing_stylesheet_url_has_a_cache_busting_version(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('href="styles.css?v=20260925-reference-v2"', html)
+        self.assertIn('href="styles.css?v=20260925-reference-v3"', html)
+
+    def test_reference_alignment_uses_a_larger_responsive_hero_portrait(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"\.hero-portrait-frame\s*\{[^}]*width\s*:\s*180px")
+        mobile = re.search(r"@media\s*\(max-width:\s*600px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+        compact = re.search(r"@media\s*\(max-width:\s*340px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+        self.assertIsNotNone(mobile, "The portrait needs an explicit mobile size")
+        self.assertIsNotNone(compact, "The smallest viewport needs a compact portrait size")
+        self.assertRegex(mobile.group(1), r"\.hero-portrait-frame\s*\{[^}]*width\s*:\s*160px")
+        self.assertRegex(compact.group(1), r"\.hero-portrait-frame\s*\{[^}]*width\s*:\s*144px")
+
+    def test_method_cards_stack_in_one_column_on_mobile(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        mobile = re.search(r"@media\s*\(max-width:\s*600px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+        self.assertIsNotNone(mobile, "Method-card mobile layout needs an explicit breakpoint")
+        self.assertRegex(mobile.group(1), r"\.method-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr")
+
+    def test_offer_mockup_blends_its_white_background_into_the_ivory_card(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"\.mini-book\s+img\s*\{[^}]*mix-blend-mode\s*:\s*multiply")
+
+    def test_checkout_actions_share_green_gold_reset_including_footer_and_closing(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        shared = re.search(r"a\.hotmart-fb\.hotmart__button-checkout\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(shared, "Hotmart checkout links need one local visual reset")
+        for declaration in (
+            r"background\s*:\s*var\(--forest\)\s*!important",
+            r"color\s*:\s*var\(--paper\)\s*!important",
+            r"border\s*:\s*1px solid var\(--gold\)\s*!important",
+            r"box-shadow\s*:\s*none\s*!important",
+        ):
+            with self.subTest(declaration=declaration):
+                self.assertRegex(shared.group(1), declaration)
+        self.assertRegex(css, r"\.footer-cta\s*\{[^}]*min-height\s*:\s*44px")
+        self.assertNotRegex(css, r"\.closing\s+\.button\s*\{[^}]*background\s*:\s*var\(--gold\)")
+        self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*background\s*:\s*var\(--paper\)")
+        self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*color\s*:\s*var\(--forest\)")
+        self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s+\.mobile-buy-wordmark\s*\{[^}]*color\s*:\s*var\(--forest\)")
+
+    def test_header_checkout_action_keeps_ten_pixel_text_and_touch_height_at_320px(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"\.header-buy\s*\{[^}]*min-height\s*:\s*44px")
+        mobile = re.search(r"@media\s*\(max-width:\s*440px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+        compact = re.search(r"@media\s*\(max-width:\s*380px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", css)
+        self.assertIsNotNone(mobile)
+        self.assertIsNotNone(compact)
+        self.assertRegex(mobile.group(1), r"\.header-buy\s*\{[^}]*min-height\s*:\s*44px")
+        self.assertRegex(mobile.group(1), r"\.header-buy\s*\{[^}]*font-size\s*:\s*10px")
+        self.assertNotRegex(compact.group(1), r"\.header-buy\s*\{[^}]*font-size\s*:\s*[0-9]px")
 
     def test_preview_caption_keeps_chapter_label_separate_from_page_counter(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
