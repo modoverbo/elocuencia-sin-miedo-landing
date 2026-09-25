@@ -259,3 +259,17 @@ a.header-buy{min-height:62px;padding:17px 26px!important}
 @media(max-width:760px){.mobile-buy:not([hidden]){display:grid;left:0;bottom:0;transform:none;width:100%;border:0;border-radius:0;grid-template-columns:minmax(74px,1fr) minmax(0,2fr);padding:10px clamp(12px,4vw,19px) max(10px,env(safe-area-inset-bottom));box-shadow:0 -7px 22px rgba(0,0,0,.18)}.mobile-buy:not([hidden]) .mobile-buy-wordmark{display:inline-flex!important;min-height:0;padding:0!important;justify-self:center;color:var(--paper)!important;background:transparent!important;box-shadow:none!important;text-decoration:none!important;white-space:normal;line-height:1.04;font-size:clamp(9px,2.9vw,11px);letter-spacing:-.06em}.mobile-buy:not([hidden]) .mobile-buy-wordmark em{color:inherit;font-size:clamp(10px,3vw,12px)}.mobile-buy:not([hidden]) .mobile-buy-wordmark .wordmark-dot{width:6px;height:6px;right:-10px;top:-1px}.site-footer{padding-bottom:24px}}
 @media(max-width:380px){.mobile-buy:not([hidden]){gap:8px;padding-inline:12px}.mobile-buy:not([hidden]) .mobile-buy-cta{padding-inline:8px!important;font-size:10px}}
 @media(prefers-reduced-motion:reduce){.mobile-buy:not([hidden]){transition:none}}
+
+
+/* Keep reader opinions easy to reach without competing with the purchase action. */
+.review-link{display:inline-flex;align-items:center;gap:8px;width:max-content;max-width:100%;min-height:0;padding:5px 0;border-bottom:1px solid rgba(212,175,55,.72);color:var(--paper);font-size:11px;font-weight:700;line-height:1.4}
+.review-link:hover{color:var(--gold)}
+.review-link:focus-visible{outline-color:var(--gold)}
+#resenas{scroll-margin-top:7rem}
+#resenas:focus-visible{outline:3px solid var(--forest);outline-offset:6px}
+.reviews{background:var(--paper-dark);color:var(--ink)}
+.reviews .shell{max-width:900px}
+.reviews .section-kicker{color:var(--forest)}
+.reviews .section-kicker .rule{background:rgba(23,66,54,.25)}
+.reviews h2{max-width:760px;color:var(--ink)}
+.reviews p{max-width:680px;color:var(--muted);line-height:1.8}

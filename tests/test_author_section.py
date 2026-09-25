@@ -218,12 +218,39 @@ class AuthorSectionTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue((ROOT / "assets/edition" / path).is_file())
 
+    def test_reader_opinions_anchor_targets_accessible_truthful_empty_state(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        review_link = re.search(
+            r'<a class="review-link" href="#resenas"[^>]*>(.*?)</a>', html, re.DOTALL
+        )
+        self.assertIsNotNone(review_link, "Expected a neutral hero link to the local reviews section")
+        self.assertIn("Opiniones de lectores", re.sub(r"<[^>]+>", "", review_link.group(1)))
+        self.assertNotIn("button", review_link.group(0))
+
+        parsed = SalesLandingParser()
+        parsed.feed(html)
+        sections_by_id = {section["attributes"].get("id"): section for section in parsed.sections}
+        reviews = sections_by_id.get("resenas")
+        self.assertIsNotNone(reviews, "Expected the reader-opinions empty-state section")
+        self.assertEqual(reviews["attributes"].get("aria-labelledby"), "resenas-title")
+        self.assertEqual(reviews["attributes"].get("tabindex"), "-1")
+        copy = " ".join(reviews["text"]).lower()
+        self.assertIn("no se muestran reseñas", copy)
+        self.assertIn("autorización", copy)
+        self.assertNotRegex(copy, r"(?:⭐|★|\b[1-5]\s*(?:estrellas?|/5)|\b\d+\s+(?:reseñas?|opiniones|lectores?))")
+        self.assertEqual(reviews["images"], [])
+        self.assertNotIn("<blockquote", html.lower())
+        self.assertNotIn('class="review-card', html.lower())
+        self.assertRegex(css, r"#resenas\s*\{[^}]*scroll-margin-top\s*:")
+        self.assertRegex(css, r"#resenas:focus-visible\s*\{[^}]*outline")
+
     def test_landing_sections_follow_sales_flow_with_sequential_kickers(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
         parsed.feed(html)
 
-        expected_order = ["hero", "recognition", "journey", "preview", "inside", "fit", "offer", "author", "faq", "closing"]
+        expected_order = ["hero", "recognition", "journey", "preview", "inside", "fit", "offer", "reviews", "author", "faq", "closing"]
         actual_order = [
             next(
                 name
@@ -238,7 +265,7 @@ class AuthorSectionTests(unittest.TestCase):
         for section in parsed.sections:
             match = re.search(r"\b(\d{2})\s*/", " ".join(section["text"]))
             kicker_numbers.append(match.group(1) if match else None)
-        self.assertEqual(kicker_numbers, [f"{number:02d}" for number in range(1, 11)])
+        self.assertEqual(kicker_numbers, [f"{number:02d}" for number in range(1, 12)])
 
     def test_landing_sections_have_unique_ids_and_internal_links_resolve(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")

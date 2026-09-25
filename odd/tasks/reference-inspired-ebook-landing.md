@@ -93,14 +93,15 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Commit evidence:** `db5016cb0750f97d98c80485381d1695ab1f3bb0` — `feat(landing): add disclosed author book illustration` on `codex/reference-inspired-ebook-landing`.
 
-### T4 — Real testimonial presentation
+### T4 — Attributable testimonial content (blocked)
 
-- [ ] Add testimonial cards only after the owner supplies real attributable customer quotes and permission/context to identify them.
-- [ ] Until that evidence is supplied, leave the testimonial section absent or a non-testimonial placeholder; never fabricate social proof.
+- [ ] Add review cards or quotes only after the owner supplies real attributable customer wording and explicit permission/context to identify and publish it.
+- [ ] Do not add ratings, counts, stars, avatars/photos, outcomes, or endorsements without matching authorized source evidence.
+- [x] Keep T4 blocked and display no testimonial content until the evidence is supplied; the T9 neutral empty state is not social proof.
 
-**Acceptance criteria:** each displayed quote is attributable to supplied source material and is not embellished; no invented stars, ratings, counts, or outcome claims.
+**Acceptance criteria:** every displayed quote/card is attributable to supplied source material and permission and is not embellished; no invented stars, ratings, counts, people, images, or outcome claims.
 
-**Dependency:** real approved testimonial material from the owner. This task is blocked until that material is supplied; do not ask during T1.
+**Dependency:** real approved testimonial material from the owner. This content task remains blocked until supplied; T9 may add only a truthful, empty review destination without it.
 
 ### T5 — Remaining reference-inspired section flow
 
@@ -192,18 +193,24 @@ TDD evidence: RED was observed in the focused Node lifecycle suite when it showe
 
 **Parent responsive QA follow-up:** At 320px / 390px / 1280px, document scroll widths were 305px / 375px / 1265px (no horizontal overflow). On initial hero view the bottom purchase bar is `display:none`; the terms strip remains in normal flow and the sticky header stays at top 0. At 320px after scrolling two pages, hero bottom was -600, terms strip bottom -1432, header top 0, and the bar used `display:grid` at y=672 with height 68px without covering content. When preview controls were visible (top 295 / bottom 339), the bar was `aria-hidden=true` / `display:none`; when footer was visible at y=448, the bar was likewise hidden. At 390px after scroll the bar used grid and header remained top 0; pressing Home returned `scrollY=0` and hid the bar. At 1280px after scroll the bar used `display:flex` at y=706, with header top 0 and no overflow. Screenshots exist for 320px top / after-hero / preview-controls / footer, 390px and 1280px top, plus desktop post-scroll; screenshots were not captured for every measured state. The first desktop scroll started from a preview hash state, but the observed header/bar state was valid. No checkout was clicked.
 
-### T9 — Evidence-backed review link or review section
+### T9 — Truthful reader-opinions link and empty state
 
-- [ ] Add only a verified, owner-authorized review destination and/or supplied attributable review content; do not invent rating counts, stars, quotations, people, photos, or endorsements.
-- [ ] If source and permission evidence are not available, keep the section omitted or use a neutral non-testimonial link only when its destination is verified and supplied; record the evidence for any displayed social proof.
-- [ ] Keep any review action subordinate to the same primary purchase CTA and preserve privacy/accessibility expectations.
+- [x] Add a neutral, non-purchase hero text link/pill labeled “Opiniones de lectores” that targets a real local `#resenas` section; do not style or describe it as a competing checkout CTA.
+- [x] Insert the section after the offer and before the deeper author section, with a truthful empty state saying reviews for this edition will be shown only when publishable content and authorization are confirmed; make clear no reviews are currently shown.
+- [x] Add an accessible heading/anchor target with focus support and scroll margin beneath the sticky header; preserve the existing section order, primary CTA label/destination, offer terms, and preview/sticky behavior.
+- [x] Add failing-first structural assertions for link/target/order/empty-state copy, absence of ratings/quotes/counts/photos, and accessible in-page navigation.
+- [x] Keep real review cards/quotes blocked under T4 until the owner supplies attributable source wording and permission/context; do not invent ratings, quotes, buyers, photos, counts, or outcomes.
 
-**Acceptance criteria:** every review link resolves to an owner-approved, verified destination; each displayed review item is attributable to supplied source evidence and permission/context. Otherwise, no review/social-proof claim is rendered. Run full Python/Node suites and `git diff --check`.
+**Acceptance criteria:** the hero link resolves to an in-page `#resenas` empty-state section after the offer and before the author; the copy clearly communicates that no reviews are displayed yet and that only authorized, publishable material may appear. No fake or implied existing reviews, rating, star display, count, quote, person, photo, or endorsement appears. The text link is subordinate to and distinct from the existing checkout CTA. The anchor is keyboard-accessible, named by its heading, focused/landed accessibly, and not obscured by the sticky header. Existing section anchors, offer terms, preview controls/cue, sticky purchase bar, and purchase CTA label/destination remain unchanged.
 
-**Dependency:** verified review destination and, for any quotes/photos/ratings, real owner-supplied attributable content plus permission/context.
+**Dependency:** current T6–T8 implementation. Genuine attributable review material and permission/context remain a separate T4 dependency and are not required for this truthful empty state.
 
-**Route and trigger evidence:** delegated direct writer; review-source validation and any resulting section/link need focused evidence and content regression tests.
+**Route and trigger evidence:** delegated direct writer; update spans hero markup, section structure, anchor styles, focused regression tests, and task evidence.
+
+**Progress / verification:** T9 implementation complete. RED before source edits: `python3 -m unittest discover -s tests -p 'test_author_section.py' -k reader_opinions -v` failed because the hero review link did not exist; the focused section-flow test also failed because the `reviews` section was absent. GREEN: `python3 -m unittest discover -s tests -v` — 17 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `node --test tests/test_post_hero_purchase_bar.js` — 4 passed; `git diff --check` — passed. Added the non-button hero text link and a local `#resenas` section after offer and before author, with explicit no-reviews-yet and authorization wording, a named heading, `tabindex=-1`, `scroll-margin-top`, and visible focus styling. Updated subsequent section numbers through `11 /`; all internal links resolve, the purchase CTA label/target and T6–T8 preview/sticky behavior are unchanged, and no ratings, quote cards, buyer photos, counts, or endorsements are present. Real testimonials remain blocked under T4. Browser UI could not be attached for local visual verification (Brave and in-app browser unavailable to this worker); no visual/browser click is claimed. No checkout was clicked.
+
+**Commit evidence:** pending work-unit commit.
 
 ## Next step
 
-T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA confirmed by parent. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 implementation and automated checks are committed in `521e8a61616ebdbdcf8fa40d41d78545381846ab`; its 320px / 390px / 1280px browser QA is confirmed by parent, including bar suppression over the preview controls/footer and reverse-scroll dismissal. T9 remains dependent on verified, owner-approved review evidence/destination. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.
+T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA confirmed by parent. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 implementation and automated checks are committed in `521e8a61616ebdbdcf8fa40d41d78545381846ab`; its 320px / 390px / 1280px browser QA is confirmed by parent, including bar suppression over the preview controls/footer and reverse-scroll dismissal. T9 implementation is complete as a truthful `#resenas` link and empty state. The only remaining review-related work is T4, which stays blocked until real source wording and permission/context are supplied; do not invent or imply review content. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.
