@@ -9,7 +9,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 ## Scope and constraints
 
 - Feature identity: `reference-inspired-ebook-landing`.
-- Authorized scope: first-screen structure/copy, consistent purchase-CTA placement, product offer card, later section ordering, preview-open/touch feedback, generated Arturo-with-book asset, and testimonial presentation only when real attributable testimonials are supplied.
+- Authorized scope: first-screen structure/copy, consistent purchase-CTA placement, product offer card, later section ordering, preview-open/touch feedback, generated Arturo-with-book asset, and testimonial presentation only when real attributable testimonials are supplied. The user has now approved extending this same feature with T6–T9: corrected-PDF cover/page assets, green-gold brand/hero restyle, sticky header and post-hero purchase bar, and a truthful review link/section only where source evidence supports it.
 - Keep the existing Modo Verbo dark/cream/yellow brand and preserve interactive book controls and existing checkout target.
 - Repeat one same-style, same-label primary checkout CTA at key conversion points (header, hero, offer, sticky mobile CTA, closing CTA). Remove secondary marketing CTAs such as “Explorar el libro”; functional preview navigation remains.
 - Use author surname `Valdéz` exactly, including the accent. Keep Arturo identified/visible in the first screen.
@@ -121,6 +121,64 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Commit evidence:** `fbf91aca9d8133648f1d66dcb7f73c091fc435d2` — `feat(landing): complete reference-inspired section flow` on `codex/reference-inspired-ebook-landing`.
 
+### T6 — Corrected cover and interactive preview asset refresh
+
+- [x] Use the corrected final 156-page PDF at `../ebook-elocuencia-sin-miedo/output/pdf/Elocuencia sin miedo - Verde y oro - Portada corregida.pdf` as the source of truth; confirm page count and render its cover plus pages 1–13 into optimized, accurately ordered local assets.
+- [x] Import the supplied flat-cover, 3D mockup, and Arturo-holding-the-book images from `/home/julian/Descargas/` into descriptive repository assets without altering unrelated original portrait or generated-author assets.
+- [x] Replace the existing preview page assets and offer/cover references with the refreshed corrected-edition assets; keep all asset references local and ensure the digital ebook offer remains clearly digital (no physical-product implication).
+- [x] Preserve StPageFlip, all existing preview DOM IDs/controls, persistent gesture cue, reduced-motion behavior, and user-controlled interaction.
+- [x] Add failing-first regression coverage for corrected cover/page assets, ordered 13-page preview references, image existence, and retained preview interaction.
+
+**Acceptance criteria:** rendered assets demonstrably come from the final corrected 156-page PDF, include cover and pages 1–13 in correct order, have appropriate optimized dimensions/format without visible degradation, and load locally through the current offer/preview references. No physical-copy promise, invented price, discount, testimonial, or rating is introduced. Run `python3 -m unittest discover -s tests -v`, `node --test tests/test_preview_swipe_cue.js`, and `git diff --check`; document generated filenames and sizes.
+
+**Dependency:** T1–T5; source PDF and supplied images are user-provided inputs. T7 consumes the imported Arturo image for the green-gold hero restyle.
+
+**Route and trigger evidence:** delegated direct writer; PDF rendering/asset optimization, HTML asset wiring, regression tests, and this task record span multiple files and need source preparation.
+
+**Progress / verification:** T6 complete. RED before production edits: `python3 -m unittest discover -s tests -p 'test_author_section.py' -k corrected_edition -v` failed because `assets/edition/preview-manifest.json` did not yet exist. GREEN after wiring the corrected assets: focused regression passed; `python3 -m unittest discover -s tests -v` — 13 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `git diff --check` — passed. `pdfinfo` confirmed the source PDF contains 156 pages at 540 × 720 pt. The first 13 PDF pages (cover included) were rendered at 900 × 1200 and visually inspected at representative pages (cover, page 6, page 13); the resulting WebP assets are locally referenced in the existing cover/preview/zoom/inside/offer markup. The preview manifest preserves PDF-page mapping 1–13, including the cover as page 1. Supplied product photos are preserved as local optimized WebP assets for T7. Existing page 14 blurred lock panel, StPageFlip initialization and page limits, DOM IDs, gesture cue, reduced-motion behavior, and user controls were not changed. The offer already clearly states “Ebook digital en PDF”; no physical-product language or new commercial claims were added. Browser viewport visual checks were not run for this asset-only task; no browser result is claimed. No checkout was clicked.
+
+**New asset sizes:** `assets/edition/cover.webp` — 309,510 bytes; `page-02.webp` — 64,728; `page-03.webp` — 57,590; `page-04.webp` — 49,926; `page-05.webp` — 36,332; `page-06.webp` — 122,960; `page-07.webp` — 96,154; `page-08.webp` — 126,422; `page-09.webp` — 113,018; `page-10.webp` — 118,138; `page-11.webp` — 82,056; `page-12.webp` — 60,558; `page-13.webp` — 125,228; `cover-flat-reference.webp` — 441,100; `cover-mockup.webp` — 290,876; `arturo-holding-book.webp` — 208,476. All rendered edition pages are 900 × 1200; supplied source assets retain their native pixel dimensions. Manifest: `assets/edition/preview-manifest.json`.
+
+**Commit evidence:** pending T6 work-unit commit.
+
+### T7 — Green-gold visual identity and Arturo hero
+
+- [ ] Read the supplied source brand kit at `../ebook-elocuencia-sin-miedo/assets/reference/brand-kit.png` and map its evidenced palette and fonts to the landing's color/font tokens.
+- [ ] Restyle the hero and page identity using the approved green-gold system and place the supplied Arturo-with-book image in the first-screen hero, while preserving the approved hero hierarchy, offer facts, section order, and corrected cover/page assets from T6.
+- [ ] Retain professional Spanish copy and current CTA wording/destination; do not add claims, prices, ratings, quotes, or photo endorsements unsupported by owner evidence.
+- [ ] Add focused regression tests for key brand tokens, hero image/source/alt, and retained offer/preview invariants.
+
+**Acceptance criteria:** the brand-kit image grounds color/font choices; the first screen identifies Arturo and displays the supplied book-holding image; layout, accessibility, contrast, CTAs, and working preview remain coherent at 320px / 390px / 1280px. Run full Python and Node suites and `git diff --check`.
+
+**Dependency:** T6 assets.
+
+**Route and trigger evidence:** delegated direct writer; brand mapping and multi-section CSS/HTML and test changes are non-trivial.
+
+### T8 — Sticky navigation and post-hero purchase bar
+
+- [ ] Keep an offer strip in the document flow so it scrolls away, then make the site header sticky as specified by the approved design.
+- [ ] Show a bottom purchase bar only after the visitor has passed the hero; ensure it does not obscure page content, the interactive preview, controls, accessibility focus, or reduced-motion expectations.
+- [ ] Reuse the exact same existing purchase CTA label and checkout destination; keep preview/navigation links functional and non-competing.
+- [ ] Add failing-first lifecycle/structural tests for sticky-header state, post-hero bar visibility, and consistent purchase destination/label.
+
+**Acceptance criteria:** the top offer strip scrolls normally; header remains available after scrolling; bottom CTA is absent while the hero is in view and appears after leaving it; no horizontal overflow or blocked content at 320px / 390px / 1280px; purchase links remain consistent. Run full Python/Node suites and `git diff --check`; do not click checkout.
+
+**Dependency:** T6–T7.
+
+**Route and trigger evidence:** delegated direct writer; sticky and viewport lifecycle behavior involves markup, styles, JavaScript, responsive and accessibility regression coverage.
+
+### T9 — Evidence-backed review link or review section
+
+- [ ] Add only a verified, owner-authorized review destination and/or supplied attributable review content; do not invent rating counts, stars, quotations, people, photos, or endorsements.
+- [ ] If source and permission evidence are not available, keep the section omitted or use a neutral non-testimonial link only when its destination is verified and supplied; record the evidence for any displayed social proof.
+- [ ] Keep any review action subordinate to the same primary purchase CTA and preserve privacy/accessibility expectations.
+
+**Acceptance criteria:** every review link resolves to an owner-approved, verified destination; each displayed review item is attributable to supplied source evidence and permission/context. Otherwise, no review/social-proof claim is rendered. Run full Python/Node suites and `git diff --check`.
+
+**Dependency:** verified review destination and, for any quotes/photos/ratings, real owner-supplied attributable content plus permission/context.
+
+**Route and trigger evidence:** delegated direct writer; review-source validation and any resulting section/link need focused evidence and content regression tests.
+
 ## Next step
 
-T1–T3 and T5 are committed; T5’s implementation and verification are complete. Caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` is implemented and parent post-fix DOM/computed-style measurements at 320px / 390px / 1280px are recorded under T3; no post-fix screenshot is claimed. Earlier exact crop checks were unavailable to the implementation writer; the recorded image-ratio, structural, and browser evidence remains above. T4 remains blocked until real attributable testimonial material and permission/context are supplied. The user approved `single-pr` with a `size:exception` for this new feature. No PR, push, merge, or deployment is authorized.
+T1–T3 and T5 are committed; T5’s implementation and verification are complete. Caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` is implemented and parent post-fix DOM/computed-style measurements at 320px / 390px / 1280px are recorded under T3; no post-fix screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. The user approved T6–T9 as extensions of this same feature. T6 is next; do not begin T7–T9 until the parent authorizes them. The user approved `single-pr` with a `size:exception` for this feature. No PR, push, merge, or deployment is authorized.

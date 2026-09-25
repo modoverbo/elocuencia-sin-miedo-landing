@@ -1,0 +1,63 @@
+{
+  "source_pdf": "Elocuencia sin miedo - Verde y oro - Portada corregida.pdf",
+  "source_page_count": 156,
+  "preview_pages": [
+    {
+      "pdf_page": 1,
+      "path": "assets/edition/cover.webp"
+    },
+    {
+      "pdf_page": 2,
+      "path": "assets/edition/page-02.webp"
+    },
+    {
+      "pdf_page": 3,
+      "path": "assets/edition/page-03.webp"
+    },
+    {
+      "pdf_page": 4,
+      "path": "assets/edition/page-04.webp"
+    },
+    {
+      "pdf_page": 5,
+      "path": "assets/edition/page-05.webp"
+    },
+    {
+      "pdf_page": 6,
+      "path": "assets/edition/page-06.webp"
+    },
+    {
+      "pdf_page": 7,
+      "path": "assets/edition/page-07.webp"
+    },
+    {
+      "pdf_page": 8,
+      "path": "assets/edition/page-08.webp"
+    },
+    {
+      "pdf_page": 9,
+      "path": "assets/edition/page-09.webp"
+    },
+    {
+      "pdf_page": 10,
+      "path": "assets/edition/page-10.webp"
+    },
+    {
+      "pdf_page": 11,
+      "path": "assets/edition/page-11.webp"
+    },
+    {
+      "pdf_page": 12,
+      "path": "assets/edition/page-12.webp"
+    },
+    {
+      "pdf_page": 13,
+      "path": "assets/edition/page-13.webp"
+    }
+  ],
+  "supplied_assets": [
+    "cover-flat-reference.webp",
+    "cover-mockup.webp",
+    "arturo-holding-book.webp"
+  ]
+}

@@ -1,3 +1,4 @@
+import json
 import re
 import unittest
 from html.parser import HTMLParser
@@ -106,6 +107,42 @@ class SalesLandingParser(HTMLParser):
 
 
 class AuthorSectionTests(unittest.TestCase):
+    def test_corrected_edition_preview_uses_local_pdf_pages_in_order(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        manifest = json.loads((ROOT / "assets/edition/preview-manifest.json").read_text(encoding="utf-8"))
+        preview_start = html.index('<section class="preview ')
+        preview_end = html.index('<section class="inside ', preview_start)
+        preview_markup = html[preview_start:preview_end]
+
+        expected_assets = ["assets/edition/cover.webp"] + [
+            f"assets/edition/page-{page:02d}.webp" for page in range(2, 14)
+        ]
+        self.assertEqual(manifest["source_pdf"], "Elocuencia sin miedo - Verde y oro - Portada corregida.pdf")
+        self.assertEqual(manifest["source_page_count"], 156)
+        self.assertEqual(
+            manifest["preview_pages"],
+            [{"pdf_page": page, "path": path} for page, path in enumerate(expected_assets, start=1)],
+        )
+
+        page_assets = [
+            (int(page), path)
+            for page, path in re.findall(
+                r'<div class="preview-page[^\"]*" data-page="(\d+)"[^>]*>\s*<img src="([^\"]+)"',
+                preview_markup,
+            )
+            if int(page) <= 13
+        ]
+        self.assertEqual(page_assets, list(enumerate(expected_assets, start=1)))
+        self.assertIn('content="assets/edition/cover.webp"', html)
+        self.assertIn('href="assets/edition/cover.webp"', html)
+        self.assertGreaterEqual(html.count('src="assets/edition/cover.webp"'), 3)
+        for path in expected_assets:
+            with self.subTest(path=path):
+                self.assertTrue((ROOT / path).is_file())
+        for path in manifest["supplied_assets"]:
+            with self.subTest(path=path):
+                self.assertTrue((ROOT / "assets/edition" / path).is_file())
+
     def test_landing_sections_follow_sales_flow_with_sequential_kickers(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
