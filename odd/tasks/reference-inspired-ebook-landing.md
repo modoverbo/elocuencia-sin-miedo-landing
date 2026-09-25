@@ -122,13 +122,15 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Trigger / observed evidence:** parent visual QA at 384px and 1280px found the badge copy at 9px and stars at 10px too hard to read. The miniature avatar circles showed only face fragments because they reused full-resolution source coordinates at 24–30px display sizes.
 
-**Route:** delegated direct bounded follow-up to one stylesheet and focused regression test. Strict TDD remains enabled: observe the new guard fail before CSS changes; run the full Python/Node suites and `git diff --check`. Preserve quotes, attributions, ratings, cards, hero layout and CTA behavior. No browser QA by this worker; parent retains visual confirmation. No review, checkout, PR, push, or deployment.
+**Route:** delegated direct bounded follow-up to one stylesheet and focused regression test. Strict TDD remains enabled: observe the new guard fail before CSS changes; run the full Python/Node suites and `git diff --check`. Preserve quotes, attributions, ratings, cards, hero layout and CTA behavior. This worker did not use a browser; parent visual confirmation is recorded below. No review, checkout, PR, push, or deployment.
 
 **RED:** `python3 -m unittest discover -s tests -p 'test_testimonials.py' -v` — 7 tests, 2 expected failures: the new guards detected 9px copy/10px stars and the absence of the scaled sprite.
 
-**GREEN:** Focused testimonial suite — 7 passed. Final `python3 -m unittest discover -s tests -v` — 34 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Desktop capsule avatars use one-third scale of the same sprite; mobile uses a 213×426px sprite scale for 24px portrait crops. Parent visual confirmation remains pending; this writer did not use a browser.
+**GREEN:** Focused testimonial suite — 7 passed. Final `python3 -m unittest discover -s tests -v` — 34 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Desktop capsule avatars use one-third scale of the same sprite; mobile uses a 213×426px sprite scale for 24px portrait crops. Parent visual confirmation is recorded below; this writer did not use a browser.
 
 **Commit evidence:** `75791c827d21bac5c80303fdfb840bdd71f95ba7` — `fix(landing): improve testimonial badge legibility` on `codex/reference-inspired-ebook-landing`.
+
+**Parent visual QA (2026-09-25):** Parent checked the local IAB at `http://127.0.0.1:8765/index.html` at 320×700, 384×824, and 1280×900. The capsule showed recognizable source portraits and legible 12px copy / 11px link text; its `#resenas` link changed the hash and revealed the heading/cards below the sticky header. Cards were one column at 320px and 384px and two columns at 1280px. No horizontal overflow was observed; Arturo’s original solo portrait and the sticky CTA remained visible. At 320px the section top settled around y=194 with the sticky header bottom at y=63 and the section heading visible. This is observed placement, not a measurement proving an exact 80px anchor offset. Parent reports Python 34/34, Node 8/8, and `git diff --check` passed with a clean tree before this documentation update. No checkout was clicked and no deployment occurred.
 
 ### T5 — Remaining reference-inspired section flow
 
@@ -334,8 +336,8 @@ The parent reports the final v4 stylesheet loaded. This record separates full sc
 
 Additional parent checks: FAQ expanded to its supplied answer; footer purchase bar remained hidden and did not collide. Reduced-motion behavior is supported by the existing CSS/Node tests only; no browser reduced-motion check was reported. No live checkout was clicked. No real physical-touch test was performed. The page/section screenshots do not cover every section at each viewport.
 
-**Status:** T10/T11/T12 visual and functional evidence is recorded at the scope above. T4 now contains the owner-authorized reader testimonials; parent visual QA remains pending. Publication/deployment is not authorized.
+**Status:** T10/T11/T12 visual and functional evidence remains recorded at the scope above. T4 implementation and parent visual QA are complete; observed coverage and limitations are recorded in the T4 follow-up above. Publication/deployment is not authorized.
 
 ## Next step
 
-T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`; parent final v4 browser evidence is recorded above, including the 320px `#inicio` offset and 384px / 390px / 1280px layout checks. The next step is parent visual acceptance of the newly added T4 hero capsule and testimonials. No browser check, live checkout, physical-touch, or reduced-motion check is claimed; publication/deployment remains unauthorized. T4 automated implementation checks pass as detailed above. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`; parent final v4 browser evidence is recorded above, including the 320px `#inicio` offset and 384px / 390px / 1280px layout checks. Parent visual acceptance of the T4 hero capsule and testimonials is complete; the measured coverage and anchor-placement limitation are recorded above. No live checkout or deployment occurred. No T4 browser QA remains pending. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
