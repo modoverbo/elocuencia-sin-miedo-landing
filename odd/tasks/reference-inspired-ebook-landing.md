@@ -112,7 +112,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **GREEN:** Focused new suite — 5 passed. Final `python3 -m unittest discover -s tests -v` — 32 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Parent owns browser visual QA; this writer did not open a browser or click checkout. RDD stayed disabled; no review, remote action, PR, push, or deployment.
 
-**Commit evidence:** to be recorded after the verified work-unit commit.
+**Work-unit commit:** `9a90a6f3346369d602bec1caf828cda36d74fa8b` — `feat(landing): add owner-approved reader testimonials` on `codex/reference-inspired-ebook-landing`.
 
 ### T5 — Remaining reference-inspired section flow
 
