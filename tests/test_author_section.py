@@ -4,6 +4,8 @@ import unittest
 from html.parser import HTMLParser
 from pathlib import Path
 
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -452,12 +454,25 @@ class AuthorSectionTests(unittest.TestCase):
     def test_offer_mockup_is_explicitly_labeled_digital_pdf(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         offer = html[html.index('<section class="offer '):html.index('<section class="author ')]
-        self.assertIn('src="assets/edition/cover-mockup.webp"', offer)
+        self.assertIn('src="assets/edition/cover-mockup-transparent.png"', offer)
         self.assertIn('alt="Mockup ilustrativo del ebook digital en PDF Elocuencia sin miedo"', offer)
         self.assertIn("EBOOK DIGITAL · PDF · 156 PÁGINAS", offer)
         self.assertIn("Pago único", offer)
         self.assertIn("Acceso inmediato", offer)
         self.assertIn("7 días de garantía", offer)
+
+    def test_offer_mockup_uses_transparent_png_asset(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        offer = html[html.index('<section class="offer '):html.index('<section class="author ')]
+        self.assertIn('src="assets/edition/cover-mockup-transparent.png"', offer)
+        self.assertIn('width="1305" height="1205"', offer)
+
+        asset = ROOT / "assets/edition/cover-mockup-transparent.png"
+        self.assertTrue(asset.is_file(), "The offer mockup image must exist")
+        with Image.open(asset) as image:
+            self.assertEqual(image.mode, "RGBA")
+            self.assertEqual(image.size, (1305, 1205))
+            self.assertEqual(image.getpixel((0, 0))[3], 0, "The outer background must be transparent")
 
     def test_all_non_preview_images_are_responsive_and_inside_layout_has_no_fixed_height_frames(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
