@@ -196,9 +196,12 @@ class AuthorSectionTests(unittest.TestCase):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         self.assertRegex(
             html,
-            r'<span class="preview-swipe-cue" id="preview-swipe-cue" aria-hidden="true">↔</span>',
+            r'<span class="preview-swipe-cue" id="preview-swipe-cue" aria-hidden="true"><span class="preview-swipe-arrows">↔</span><span class="preview-swipe-hand">👆</span></span>',
         )
-        self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*\b1\s*;?")
+        self.assertRegex(html, r'<p class="preview-hint">[^<]*Desliza para explorar[^<]*Toca una página para ampliarla\.')
+        self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*position\s*:\s*absolute")
+        self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*pointer-events\s*:\s*none")
+        self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*infinite")
         reduced_motion = css[css.rfind("@media(prefers-reduced-motion:reduce){"):]
         self.assertRegex(reduced_motion, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation\s*:\s*none")
 

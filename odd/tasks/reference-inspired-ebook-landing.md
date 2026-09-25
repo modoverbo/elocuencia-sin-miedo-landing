@@ -19,7 +19,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 - Reference structure to adapt: hero → problem → method/content → offer → testimonials → author → FAQ/closing CTA. Preserve the functioning preview; retain Arturo in the first-screen hierarchy even if a deeper author section moves later.
 - No analytics/Clarity, checkout clicks, push, PR, or deployment.
 - Delivery strategy: `ask-on-risk`; no size exception is approved for this new feature. Do not create a PR. Each task closes with a Conventional Commit on this feature branch; stop if ordinary repository policy blocks a commit rather than assuming an exception.
-- Forecast: approximately 300 authored changed lines across the tasks, generated image excluded; estimate is advisory only.
+- Initial forecast: approximately 300 authored changed lines across the tasks, generated image excluded; this T1-era estimate is superseded by T2’s actual cumulative count below. Estimates are advisory, not hard task caps.
 
 ## Working configuration
 
@@ -51,15 +51,25 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Commit evidence:** `e69bb4a05d94881abfa9e47b0a63bd4d42445b3b` — `feat(landing): unify purchase CTA and offer card` on `codex/reference-inspired-ebook-landing`.
 
-### T2 — Stronger preview touch/open animation
+### T2 — Persistent preview gesture affordance
 
-- [ ] Improve visual feedback when a visitor touches or opens the book preview without obscuring primary conversion UI.
-- [ ] Preserve existing controls, one-time discoverability cue behavior, and reduced-motion accessibility.
-- [ ] Add interaction regression coverage and verify mobile/desktop behavior.
+- [x] Show a clearly animated, non-intercepting finger/swipe affordance over the cover/pages while the preview is in the viewport and has not been interacted with.
+- [x] Keep the affordance repeating/persistent long enough to be noticed (not a one-shot 1.35s arrow); pause it when the preview leaves the viewport and resume on re-entry until first interaction.
+- [x] Dismiss it immediately on first relevant pointer, keyboard, or preview-control interaction; preserve `Abrir la muestra` and user-controlled StPageFlip. Never turn pages automatically.
+- [x] Under reduced-motion preference, show a static accessible instruction instead of motion.
+- [x] Add focused viewport entry/exit, persistence/dismissal, reduced-motion, and markup regression coverage; verify visual/functional behavior without obstructing vertical scroll, book touch input, preview controls, or checkout CTAs.
 
-**Acceptance criteria:** animation responds to real preview interaction, respects reduced motion, does not interfere with flipping controls or checkout CTAs, and passes preview/Python tests plus viewport checks.
+**Acceptance criteria:** cue displays over the book surface without intercepting input, activates only when visible and not previously interacted with, repeats until interaction, pauses/resumes with visibility, disappears on interaction, and remains static and accessibly described for reduced motion. Preview controls remain fully user-controlled. Python and Node tests plus available viewport checks pass; no checkout is clicked.
 
 **Dependency:** T1; retain original interactive preview.
+
+**Route and trigger evidence:** delegated direct writer; behavior touches the JavaScript lifecycle, preview markup/styles, and Node/Python regression tests, all non-trivial; preparation and implementation are performed by the single writer.
+
+**Delivery forecast:** Final pre-commit `git diff --numstat main` reports 375 authored changed lines cumulatively for T1+T2, including the tracked feature document, below the advisory ~400-line threshold. This T2 work unit can close without a size exception. Reassess before the next work-unit commit if the accumulated feature exceeds the threshold; no size exception is authorized for this feature.
+
+**Progress / verification:** RED before production changes: Node preview lifecycle — 2 expected failures; focused Python suite — 1 expected cue-markup failure. GREEN: `node --test tests/test_preview_swipe_cue.js` — 4 passed; `python3 -m unittest discover -s tests -v` — 7 passed; `git diff --check` — passed. Browser checks at 320 / 390 / 1280 px showed no horizontal overflow (document widths 305 / 375 / 1265 px); at 320 and 390 the repeating cue is visible over the book with the static instruction and clear of the sticky CTA/controls, and desktop preview view shows the cue over the cover. CSS/DOM readback confirmed `pointer-events:none` and a repeating 1.8s animation. Clicking only the functional “Abrir la muestra” control advanced to page 2 and dismissed the cue; no checkout was clicked. Reduced-motion static instruction is covered by the Python markup check and Node preference lifecycle test.
+
+**Commit evidence:** Pending T2 work-unit commit.
 
 ### T3 — Generated Arturo-with-book visual
 
@@ -90,4 +100,4 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ## Next step
 
-Complete a responsive visual readback at 390px and desktop 1280px when a viewport-capable browser is available; T1 implementation/tests are committed and ready for parent review. Then defer T2–T5 to separate work units; T4 still depends on real attributable testimonial material.
+T2 is verified and within the current delivery strategy; T3 and T5 remain, and T4 depends on real attributable testimonial material. Reassess accumulated delivery size before the next work-unit commit.

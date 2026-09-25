@@ -40,25 +40,23 @@
     }
   }
 
-  function startSwipeCue() {
-    if (swipeCueState !== 'pending') return;
+  function updateSwipeCueVisibility(isVisible) {
+    if (swipeCueState !== 'pending' && swipeCueState !== 'active') return;
     if (reducedMotion.matches) {
       swipeCueState = 'suppressed';
       removeSwipeCueVisibilityWatch();
       return;
     }
-    swipeCueState = 'active';
-    swipeCue.classList.add('is-animated');
-    removeSwipeCueVisibilityWatch();
+    swipeCueState = isVisible ? 'active' : 'pending';
+    swipeCue.classList.toggle('is-animated', isVisible);
   }
 
   function watchSwipeCueVisibility() {
     if (swipeCueState !== 'pending') return;
     if (window.IntersectionObserver) {
       swipeCueObserver = new window.IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.target === bookElement && entry.isIntersecting)) {
-          startSwipeCue();
-        }
+        const entry = entries.find((item) => item.target === bookElement);
+        if (entry) updateSwipeCueVisibility(entry.isIntersecting);
       }, { threshold: 0.15 });
       swipeCueObserver.observe(bookElement);
       return;
@@ -67,7 +65,7 @@
     swipeCueFallbackCheck = () => {
       const bounds = bookElement.getBoundingClientRect();
       const viewportBottom = window.innerHeight || document.documentElement.clientHeight;
-      if (bounds.bottom > 0 && bounds.top < viewportBottom) startSwipeCue();
+      updateSwipeCueVisibility(bounds.bottom > 0 && bounds.top < viewportBottom);
     };
     window.addEventListener('scroll', swipeCueFallbackCheck);
     window.addEventListener('resize', swipeCueFallbackCheck);
@@ -163,6 +161,11 @@
     if (isFlipping) return;
     pageFlip.turnToPage(0);
     updateControls(0);
+  });
+
+  [previous, next, replay].forEach((control) => {
+    control.addEventListener('pointerdown', stopSwipeCue);
+    control.addEventListener('keydown', stopSwipeCue);
   });
 
   bookElement.addEventListener('pointerdown', (event) => {

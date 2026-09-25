@@ -15,6 +15,12 @@ class FakeElement {
       remove: (...names) => names.forEach((name) => classes.delete(name)),
       contains: (name) => classes.has(name),
       has: (name) => classes.has(name),
+      toggle: (name, force) => {
+        const shouldAdd = force === undefined ? !classes.has(name) : force;
+        if (shouldAdd) classes.add(name);
+        else classes.delete(name);
+        return shouldAdd;
+      },
     };
     this.listeners = new Map();
     this.disabled = false;
@@ -121,6 +127,7 @@ function loadPreview({ reducedMotion = false, intersectionObserver = true, bookT
   return {
     book: elements.get('flipbook'),
     cue: elements.get('preview-swipe-cue'),
+    next: elements.get('preview-next'),
     mediaPreference: motionPreference,
     observer: visibility.observer,
     setBookTop(top) { bookTop = top; },
@@ -128,7 +135,7 @@ function loadPreview({ reducedMotion = false, intersectionObserver = true, bookT
   };
 }
 
-test('waits for the preview to enter view, then dismisses the cue on first pointer interaction', () => {
+test('starts while visible, pauses offscreen, resumes on re-entry, and dismisses on interaction', () => {
   const { book, cue, observer } = loadPreview();
 
   assert.equal(cue.classList.has('is-animated'), false);
@@ -136,7 +143,14 @@ test('waits for the preview to enter view, then dismisses the cue on first point
   assert.equal(observer.observed, book);
   observer.trigger();
   assert.equal(cue.classList.has('is-animated'), true);
-  assert.equal(observer.disconnected, true);
+  assert.equal(observer.disconnected, undefined);
+
+  observer.trigger(false);
+  assert.equal(cue.classList.has('is-animated'), false);
+  assert.equal(cue.classList.has('is-dismissed'), false);
+
+  observer.trigger(true);
+  assert.equal(cue.classList.has('is-animated'), true);
 
   book.dispatch('pointerdown', { pointerId: 1, clientX: 40, clientY: 60 });
 
@@ -145,6 +159,17 @@ test('waits for the preview to enter view, then dismisses the cue on first point
 
   book.dispatch('pointerdown', { pointerId: 2, clientX: 50, clientY: 65 });
   assert.equal(cue.classList.has('is-animated'), false);
+  assert.equal(observer.disconnected, true);
+});
+
+test('dismisses the visible cue immediately when a preview control receives keyboard interaction', () => {
+  const { cue, observer, next } = loadPreview();
+  observer.trigger(true);
+  next.dispatch('keydown', { key: 'Enter' });
+
+  assert.equal(cue.classList.has('is-animated'), false);
+  assert.equal(cue.classList.has('is-dismissed'), true);
+  assert.equal(observer.disconnected, true);
 });
 
 test('does not animate under reduced motion at load or after preference changes before visibility', () => {

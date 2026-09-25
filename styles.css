@@ -184,15 +184,17 @@ a.header-buy{min-height:62px;padding:17px 26px!important}
   .mobile-buy>span{display:none}
 }
 
-/* Animate only the hint glyph, never the flipbook surface or its scroll area. */
-.preview-swipe-cue{display:inline-flex;align-items:center;margin-right:.4em;color:var(--yellow);font-size:1.25em;font-weight:700;vertical-align:middle}
-.preview-swipe-cue.is-animated{animation:preview-swipe-cue-nudge 1.35s ease-in-out .2s 1}
+/* The gesture cue overlays the book but never captures input or blocks vertical scrolling. */
+.preview-swipe-cue{position:absolute;right:clamp(18px,8%,56px);bottom:clamp(18px,8%,56px);z-index:3;display:inline-flex;align-items:center;justify-content:center;gap:3px;width:72px;height:56px;border:2px solid var(--paper);border-radius:999px;background:var(--yellow);color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.28);font-size:23px;line-height:1;opacity:0;visibility:hidden;pointer-events:none}
+.preview-swipe-arrows{font-size:19px;font-weight:700}
+.preview-swipe-hand{font-size:27px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+.preview-swipe-cue.is-animated{visibility:visible;opacity:1;animation:preview-swipe-cue-nudge 1.8s ease-in-out .2s infinite}
 .preview-swipe-cue.is-dismissed{visibility:hidden;opacity:0}
 @keyframes preview-swipe-cue-nudge{
-  0%,100%{transform:translateX(0)}
-  24%{transform:translateX(-5px)}
-  52%{transform:translateX(5px)}
-  78%{transform:translateX(-2px)}
+  0%,62%,100%{transform:translateX(0)}
+  16%{transform:translateX(-12px)}
+  32%{transform:translateX(12px)}
+  48%{transform:translateX(-5px)}
 }
 @media(prefers-reduced-motion:reduce){
   .preview-swipe-cue.is-animated{animation:none!important}
