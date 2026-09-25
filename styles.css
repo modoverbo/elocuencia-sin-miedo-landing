@@ -93,11 +93,9 @@ a.button.button-yellow.hotmart-fb{color:var(--ink)!important;background:var(--ye
 
 a.button.hotmart-fb,a.header-buy.hotmart-fb{font-family:Poppins,Arial,sans-serif!important;text-decoration:none!important}
 
-/* The hero offers two equally prominent, finger-friendly choices. */
+/* Keep the hero's single purchase action prominent without a competing button. */
 .hero-actions{justify-content:center;max-width:550px;gap:14px}
 .hero-actions>a{min-height:58px;min-width:205px}
-.hero-actions .button-outline{border-color:var(--ink);color:var(--ink);background:transparent}
-.hero-actions .button-outline:hover{background:#fff9df}
 
 .author{background:var(--ink);color:var(--paper)}
 .author .section-kicker .rule{background:rgba(249,246,237,.25)}
@@ -149,6 +147,36 @@ a.header-buy{min-height:62px;padding:17px 26px!important}
   .author-photo-label{left:-10px;bottom:16px}
   .hero-actions>a.button-dark{min-height:64px}
   .hero-actions>a.button-outline{min-height:54px}
+}
+
+.hero-author{display:flex;align-items:center;gap:13px;margin:0 0 26px;color:var(--ink)}
+.hero-author-portrait{width:48px;height:48px;flex:none;object-fit:cover;border:2px solid var(--yellow);border-radius:50%}
+.hero-author>span{display:grid;gap:2px;font-size:11px;line-height:1.35}
+.hero-author strong{font-size:13px}
+.hero-author small{color:#6f7067;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+.hero-actions>a.button-dark{width:max-content;max-width:100%}
+.offer-includes{display:grid;gap:10px;margin:20px 0 24px;padding:0;list-style:none;color:#4e5047;font-size:11px;line-height:1.5}
+.offer-includes li{display:flex;align-items:flex-start;gap:9px}
+.offer-includes li::before{content:"✓";color:#6e681d;font-weight:700}
+.offer-card-copy .button{width:100%;text-align:center}
+.closing{background:var(--ink);color:var(--paper);text-align:center}
+.closing-inner{max-width:720px}
+.closing .tiny-label{color:var(--yellow);letter-spacing:.14em}
+.closing h2{margin:18px 0;font-size:clamp(38px,5vw,62px)}
+.closing h2 em{color:var(--yellow)}
+.closing p:not(.tiny-label){max-width:520px;margin:0 auto 26px;color:#dbd9ce;line-height:1.75}
+.closing .button{display:inline-flex;min-height:60px;align-items:center;justify-content:center}
+
+@media(max-width:760px){
+  .hero-author{margin-bottom:22px}
+  .hero-actions>a.button-dark{width:min(100%,340px)}
+  .closing{padding-bottom:112px}
+}
+
+@media(max-width:440px){
+  .hero{padding-top:20px}
+  .hero-copy{padding-top:12px}
+  h1{font-size:clamp(43px,10vw,58px);line-height:1.03}
 }
 
 @media(max-width:440px){

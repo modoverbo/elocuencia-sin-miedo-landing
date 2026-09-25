@@ -1,0 +1,91 @@
+# Reference-inspired ebook sales landing
+
+Redesign the Elocuencia sin miedo sales page around a clearer first-screen value proposition and one repeated checkout path, while retaining its dark, cream, and yellow Modo Verbo identity and working interactive preview.
+
+## Objective and problem
+
+The current landing needs a stronger sales hierarchy inspired by the flow of srluizferraz.com without copying its text, claims, price, testimonials, rating, person, or visual identity. Arturo must remain visibly identified on the first screen even as deeper content follows a clearer sales-page sequence.
+
+## Scope and constraints
+
+- Feature identity: `reference-inspired-ebook-landing`.
+- Authorized scope: first-screen structure/copy, consistent purchase-CTA placement, product offer card, later section ordering, preview-open/touch feedback, generated Arturo-with-book asset, and testimonial presentation only when real attributable testimonials are supplied.
+- Keep the existing Modo Verbo dark/cream/yellow brand and preserve interactive book controls and existing checkout target.
+- Repeat one same-style, same-label primary checkout CTA at key conversion points (header, hero, offer, sticky mobile CTA, closing CTA). Remove secondary marketing CTAs such as “Explorar el libro”; functional preview navigation remains.
+- Use author surname `Valdéz` exactly, including the accent. Keep Arturo identified/visible in the first screen.
+- Owner-provided offer assertions for this work: one-time payment, immediate ebook access, 7-day guarantee. Present as owner-supplied terms, not independently verified checkout facts.
+- The ebook is PDF, 156 pages. Do not invent a numeric price, discount, or other offer term.
+- No fake testimonials, quotes, ratings, named buyers, credentials, or unsupported promises. T4 must wait for real attributable customer wording and permission/context to identify it.
+- Reference structure to adapt: hero → problem → method/content → offer → testimonials → author → FAQ/closing CTA. Preserve the functioning preview; retain Arturo in the first-screen hierarchy even if a deeper author section moves later.
+- No analytics/Clarity, checkout clicks, push, PR, or deployment.
+- Delivery strategy: `ask-on-risk`; no size exception is approved for this new feature. Do not create a PR. Each task closes with a Conventional Commit on this feature branch; stop if ordinary repository policy blocks a commit rather than assuming an exception.
+- Forecast: approximately 300 authored changed lines across the tasks, generated image excluded; estimate is advisory only.
+
+## Working configuration
+
+- Organic TDD: test-first RED → GREEN → REFACTOR for behavior and structural changes.
+- Strict TDD marker is enabled in workspace instructions; use the requested regression suite: `python3 -m unittest discover -s tests -v`, plus `node --test tests/test_preview_swipe_cue.js`.
+- Browser visual checks: mobile 320px and 390px; desktop 1280px. `git diff --check` at task closure.
+- RDD is disabled for this clone; do not start a review lifecycle or change the setting.
+
+## Tasks
+
+### T1 — First-screen sales hierarchy, repeated CTA, and offer card
+
+- [x] Establish a reference-inspired first screen that keeps Arturo identified while clarifying the ebook's value proposition.
+- [x] Repeat the existing checkout CTA style/label and target in the header, hero, offer card, fixed mobile banner, and closing conversion point; remove secondary marketing CTA buttons while preserving functional preview controls.
+- [x] Add a brand-consistent offer card with PDF, 156 pages, and owner-provided one-time payment, immediate access, and 7-day guarantee claims; do not show a price or discount.
+- [x] Update `Arturo Valdéz` spelling and add focused regression tests.
+
+**Acceptance criteria**
+
+- Arturo's name including `Valdéz` is visible and identified on the first screen.
+- The hero communicates the ebook value and a primary checkout action without competing marketing buttons.
+- All primary purchase buttons use the same copy and current Hotmart destination; preview navigation still works.
+- The offer card states PDF / 156 pages / one-time payment / immediate access / 7-day guarantee without numeric price, discount, or unsupported assertions beyond the supplied owner terms.
+- Python suite, Node preview tests, `git diff --check`, and specified viewport checks pass; no checkout is clicked.
+
+**Route and trigger evidence:** delegated direct writer; preparation spans current markup, responsive styles, and regression tests and modifies multiple non-trivial files, so delegated mapping/preparation and one writer are required.
+
+**Progress / verification:** Implementation and automated checks complete; viewport verification is partial. RED: before source edits, `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` failed for the expected old hero/author order and secondary hero button. GREEN: `python3 -m unittest discover -s tests -v` — 7 passed; `node --test tests/test_preview_swipe_cue.js` — 3 passed; `git diff --check` — passed. Browser review in the available fixed mobile CUA viewport showed Arturo Valdéz and the primary CTA on the first screen, the CTA clear of the sticky banner after tightening narrow-mobile vertical spacing, the offer card terms visible in one column, and the preview responding to its “Abrir la muestra” control. No checkout was clicked. This sub-agent browser surface did not expose viewport resizing or desktop view, so the requested exact 320px / 390px / 1280px checks remain unverified; do not report them as passed. Source/test diff is 196 authored changed lines; with this 91-line ODD document, T1 is approximately 287 authored changed lines, below the advisory ~400-line forecast.
+
+### T2 — Stronger preview touch/open animation
+
+- [ ] Improve visual feedback when a visitor touches or opens the book preview without obscuring primary conversion UI.
+- [ ] Preserve existing controls, one-time discoverability cue behavior, and reduced-motion accessibility.
+- [ ] Add interaction regression coverage and verify mobile/desktop behavior.
+
+**Acceptance criteria:** animation responds to real preview interaction, respects reduced motion, does not interfere with flipping controls or checkout CTAs, and passes preview/Python tests plus viewport checks.
+
+**Dependency:** T1; retain original interactive preview.
+
+### T3 — Generated Arturo-with-book visual
+
+- [ ] Create a new on-brand image of Arturo holding the ebook/book, keeping the supplied portrait as the identity reference and avoiding unsupported claims/props.
+- [ ] Integrate only after visually checking the generated asset and responsive crops.
+
+**Acceptance criteria:** generated asset is clearly a visual enhancement, does not replace the first-screen author identification, and passes visual crop checks at mobile/desktop sizes.
+
+**Dependency:** T1. Do not modify the original portrait source.
+
+### T4 — Real testimonial presentation
+
+- [ ] Add testimonial cards only after the owner supplies real attributable customer quotes and permission/context to identify them.
+- [ ] Until that evidence is supplied, leave the testimonial section absent or a non-testimonial placeholder; never fabricate social proof.
+
+**Acceptance criteria:** each displayed quote is attributable to supplied source material and is not embellished; no invented stars, ratings, counts, or outcome claims.
+
+**Dependency:** real approved testimonial material from the owner. This task is blocked until that material is supplied; do not ask during T1.
+
+### T5 — Remaining reference-inspired section flow
+
+- [ ] Reorder existing problem, method/content, offer, deeper author, FAQ, and closing conversion content to follow the reference-inspired sequence while preserving the original book-preview interaction and stable navigation targets.
+- [ ] Keep all new or repeated purchase links on the same checkout destination and prevent competing secondary marketing CTAs.
+
+**Acceptance criteria:** visitors can follow the adapted hero → problem → method/content → offer → (real testimonials only) → deeper author → FAQ/closing CTA flow; internal navigation IDs remain valid and existing interactive book preview remains usable.
+
+**Dependency:** T1 and T4 evidence availability; T4 content may be omitted if not supplied.
+
+## Next step
+
+Complete a responsive visual readback at 390px and desktop 1280px when a viewport-capable browser is available; T1 implementation/tests are otherwise ready for parent review. Then defer T2–T5 to separate work units; T4 still depends on real attributable testimonial material.

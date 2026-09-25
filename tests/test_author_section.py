@@ -7,20 +7,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-class SectionParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.sections = []
-        self.images = []
-
-    def handle_starttag(self, tag, attrs):
-        attributes = dict(attrs)
-        if tag == "section":
-            self.sections.append(attributes)
-        elif tag == "img":
-            self.images.append(attributes)
-
-
 class MobileBrandParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -56,6 +42,69 @@ class MobileBrandParser(HTMLParser):
             self.in_mobile_banner = False
 
 
+class SalesLandingParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.sections = []
+        self.current_section = None
+        self.in_header = False
+        self.in_mobile_banner = False
+        self.checkout_links = []
+        self.marketing_buttons = []
+        self.current_checkout_link = None
+        self.offer_card_text = []
+        self.offer_card_div_depth = 0
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        classes = attributes.get("class", "").split()
+        if tag == "header":
+            self.in_header = True
+        elif tag == "section":
+            self.current_section = {"attributes": attributes, "text": [], "images": []}
+            self.sections.append(self.current_section)
+        elif tag == "div" and "offer-card" in classes:
+            self.offer_card_div_depth = 1
+        elif tag == "div" and "mobile-buy" in classes:
+            self.in_mobile_banner = True
+        elif tag == "div" and self.offer_card_div_depth:
+            self.offer_card_div_depth += 1
+        elif tag == "img" and self.current_section is not None:
+            self.current_section["images"].append(attributes)
+        elif tag == "a":
+            if "hotmart__button-checkout" in classes:
+                self.current_checkout_link = {
+                    "attributes": attributes,
+                    "section": self.current_section,
+                    "in_header": self.in_header,
+                    "in_mobile_banner": self.in_mobile_banner,
+                    "text": [],
+                }
+                self.checkout_links.append(self.current_checkout_link)
+            if "button" in classes and "hotmart__button-checkout" not in classes:
+                self.marketing_buttons.append(attributes)
+
+    def handle_data(self, data):
+        if self.current_section is not None:
+            self.current_section["text"].append(data)
+        if self.offer_card_div_depth:
+            self.offer_card_text.append(data)
+        if self.current_checkout_link is not None:
+            self.current_checkout_link["text"].append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "section":
+            self.current_section = None
+        elif tag == "header":
+            self.in_header = False
+        elif tag == "div" and self.in_mobile_banner:
+            self.in_mobile_banner = False
+        elif tag == "div" and self.offer_card_div_depth:
+            self.offer_card_div_depth -= 1
+        elif tag == "a":
+            self.current_checkout_link = None
+
+
 class AuthorSectionTests(unittest.TestCase):
     def test_author_portrait_is_circular_without_rectangular_frame(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
@@ -74,21 +123,47 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertEqual(effective_declarations.get("border"), "none")
         self.assertEqual(effective_declarations.get("box-shadow"), "none")
 
-    def test_author_section_precedes_hero_with_local_portrait(self):
+    def test_sales_hero_leads_and_identifies_author_with_portrait(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        parsed = SectionParser()
+        parsed = SalesLandingParser()
         parsed.feed(html)
-        section_classes = [section.get("class", "") for section in parsed.sections]
-        author = next(i for i, classes in enumerate(section_classes) if "author" in classes.split())
-        hero = next(i for i, classes in enumerate(section_classes) if "hero" in classes.split())
-        self.assertEqual(author, 0)
-        self.assertLess(author, hero)
-        self.assertIn("Arturo", html)
-        self.assertIn("Modo Verbo", html)
-        portrait = next(image for image in parsed.images if "author-portrait" in image.get("class", ""))
+        hero = next(section for section in parsed.sections if "hero" in section["attributes"].get("class", "").split())
+        author = next(section for section in parsed.sections if "author" in section["attributes"].get("class", "").split())
+        self.assertEqual(parsed.sections[0], hero)
+        self.assertGreater(parsed.sections.index(author), parsed.sections.index(hero))
+        self.assertIn("Arturo Valdéz", " ".join(hero["text"]))
+        portrait = next(image for image in hero["images"] if "hero-author-portrait" in image.get("class", ""))
         self.assertTrue((ROOT / portrait["src"]).is_file())
-        self.assertTrue(portrait.get("alt"))
+        self.assertEqual(portrait.get("alt"), "Arturo Valdéz, autor de Elocuencia sin miedo")
         self.assertNotRegex(html, r"(?i)(20 años|50[ .]?000 personas|50 mil personas)")
+
+    def test_primary_purchase_cta_repeats_across_sections_and_offer_states_owner_terms(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parsed = SalesLandingParser()
+        parsed.feed(html)
+
+        self.assertFalse(parsed.marketing_buttons)
+        self.assertGreaterEqual(len(parsed.checkout_links), 5)
+        for link in parsed.checkout_links:
+            visible_label = "".join(link["text"]).replace("↗", "").strip()
+            self.assertEqual(visible_label, "Quiero hablar con claridad")
+            self.assertEqual(
+                link["attributes"].get("href"),
+                "https://pay.hotmart.com/H107735669O?checkoutMode=2&off=s5txzdcx",
+            )
+        locations = {
+            "header": any(link["in_header"] for link in parsed.checkout_links),
+            "hero": any(link["section"] and "hero" in link["section"]["attributes"].get("class", "").split() for link in parsed.checkout_links),
+            "offer": any(link["section"] and "offer" in link["section"]["attributes"].get("class", "").split() for link in parsed.checkout_links),
+            "mobile banner": any(link["in_mobile_banner"] for link in parsed.checkout_links),
+            "closing section": any(link["section"] and "closing" in link["section"]["attributes"].get("class", "").split() for link in parsed.checkout_links),
+        }
+        self.assertTrue(all(locations.values()), locations)
+
+        offer_text = " ".join(parsed.offer_card_text).lower()
+        for term in ("pdf", "156", "pago único", "acceso inmediato", "7 días de garantía"):
+            self.assertIn(term, offer_text)
+        self.assertNotRegex(offer_text, r"(?:\$|\b\d+[.,]\d{2}\b)")
 
     def test_primary_ctas_are_prominent_and_mobile_copy_is_benefit_led(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
