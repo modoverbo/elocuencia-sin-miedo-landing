@@ -57,6 +57,23 @@ class MobileBrandParser(HTMLParser):
 
 
 class AuthorSectionTests(unittest.TestCase):
+    def test_author_portrait_is_circular_without_rectangular_frame(self):
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        css = re.sub(r"/\*[\s\S]*?\*/", "", css)
+        portrait_rules = re.findall(r"\.author-portrait\b[^{}]*\{([^{}]*)\}", css)
+        self.assertTrue(portrait_rules, "Expected styles for the author portrait")
+
+        effective_declarations = {}
+        for rule in portrait_rules:
+            for declaration in rule.split(";"):
+                if ":" in declaration:
+                    property_name, value = declaration.split(":", 1)
+                    effective_declarations[property_name.strip().lower()] = value.strip().lower()
+
+        self.assertEqual(effective_declarations.get("border-radius"), "50%")
+        self.assertEqual(effective_declarations.get("border"), "none")
+        self.assertEqual(effective_declarations.get("box-shadow"), "none")
+
     def test_author_section_precedes_hero_with_local_portrait(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SectionParser()
