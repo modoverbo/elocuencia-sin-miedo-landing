@@ -282,8 +282,8 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **GREEN:** Added `scroll-padding-top:80px` to the existing root rule; `styles.css?v=20260925-reference-v4`. Focused test passed; full Python suite — 26 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Reduced-motion continues to set `scroll-behavior:auto`. No browser QA is claimed by this worker. Parent will verify `#inicio` plus 390px / 1280px.
 
-**Commit evidence:** pending.
+**Commit evidence:** `a29523fc70cbabcbcf5e5e05f46930a563ffb1a1` — `fix(landing): offset hash targets below sticky header` on `codex/reference-inspired-ebook-landing`.
 
 ## Next step
 
-T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and the pending T12 hash-offset commit. Parent has visually checked 320px sections and preview before the hash fix; the `#inicio` anchor recheck at 320px plus 390px / 1280px remains pending. Preserve parent browser evidence under T11/T12 and do not claim visual verification of the final hash offset until parent confirms. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`. Parent has visually checked 320px sections and preview before the hash fix; the `#inicio` anchor recheck at 320px plus 390px / 1280px remains pending. Preserve parent browser evidence under T11/T12 and do not claim visual verification of the final hash offset until parent confirms. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
