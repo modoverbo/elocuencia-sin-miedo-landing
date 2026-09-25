@@ -139,7 +139,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **New asset sizes:** `assets/edition/cover.webp` — 309,510 bytes; `page-02.webp` — 64,728; `page-03.webp` — 57,590; `page-04.webp` — 49,926; `page-05.webp` — 36,332; `page-06.webp` — 122,960; `page-07.webp` — 96,154; `page-08.webp` — 126,422; `page-09.webp` — 113,018; `page-10.webp` — 118,138; `page-11.webp` — 82,056; `page-12.webp` — 60,558; `page-13.webp` — 125,228; `cover-flat-reference.webp` — 441,100; `cover-mockup.webp` — 290,876; `arturo-holding-book.webp` — 208,476. All rendered edition pages are 900 × 1200; supplied source assets retain their native pixel dimensions. Manifest: `assets/edition/preview-manifest.json`.
 
-**Commit evidence:** pending T6 work-unit commit.
+**Commit evidence:** `736d14726717e1de9b244c452699a98d0a30963a` — `feat(preview): refresh assets from corrected ebook edition` on `codex/reference-inspired-ebook-landing`.
 
 ### T7 — Green-gold visual identity and Arturo hero
 
