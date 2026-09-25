@@ -28,6 +28,8 @@ class FakeElement {
     this.innerHTML = '';
     this.textContent = '';
     this.open = false;
+    this.bounds = { top: 0, bottom: 0 };
+    this.inert = false;
   }
 
   addEventListener(type, listener) {
@@ -49,6 +51,9 @@ class FakeElement {
   setAttribute(name, value) {
     this.attributes.set(name, value);
   }
+
+  getBoundingClientRect() { return this.bounds; }
+  contains() { return false; }
 }
 
 class FakePageFlip {
@@ -83,6 +88,8 @@ function loadPreview({ reducedMotion = false, intersectionObserver = true, bookT
     }
   }
   const document = {
+    activeElement: null,
+    documentElement: { clientHeight: 800 },
     getElementById(id) {
       if (!elements.has(id)) elements.set(id, new FakeElement());
       return elements.get(id);

@@ -120,6 +120,37 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertEqual(declarations.get("gap"), "12px")
         self.assertEqual(declarations.get("justify-content"), "space-between")
 
+    def test_offer_strip_precedes_sticky_header_and_post_hero_bar_is_accessibly_hidden(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        strip_start = html.find('<div class="offer-strip"')
+        self.assertGreater(strip_start, -1, "Expected the terms strip before the sticky header")
+        header_start = html.index('<header class="site-header"')
+        self.assertLess(strip_start, header_start)
+        strip_end = html.index("</div>", strip_start)
+        strip_text = re.sub(r"<[^>]+>", " ", html[strip_start:strip_end])
+        for term in ("EBOOK DIGITAL", "PAGO ÚNICO", "ACCESO INMEDIATO", "7 DÍAS DE GARANTÍA"):
+            with self.subTest(term=term):
+                self.assertIn(term, strip_text)
+        self.assertNotRegex(strip_text, r"(?i)(\$|\b\d+[.,]?\d*\s?(usd|cop|eur)|descuento|% off)")
+
+        sticky_header = re.search(r"\.site-header\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(sticky_header)
+        self.assertIn("position:sticky", sticky_header.group(1))
+        self.assertIn("top:0", sticky_header.group(1))
+        post_hero_bar = re.search(r'<div class="mobile-buy"[^>]*id="post-hero-buy"[^>]*>', html)
+        self.assertIsNotNone(post_hero_bar)
+        for attribute in ('hidden', 'inert', 'aria-hidden="true"'):
+            self.assertIn(attribute, post_hero_bar.group(0))
+        self.assertIn(".mobile-buy[hidden]{display:none!important}", css)
+        self.assertIn(".mobile-buy:not([hidden]){display:flex;", css)
+        self.assertIn(".mobile-buy:not([hidden]){display:grid;", css)
+        self.assertIn('id="preview-controls"', html)
+        self.assertIn('id="site-footer"', html)
+        self.assertIn('id="preview-next"', html)
+        self.assertIn('id="footer-purchase-cta"', html)
+        self.assertIn("@media(prefers-reduced-motion:reduce)", css)
+
     def test_editorial_brand_uses_green_gold_palette_and_display_swap_fonts(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
@@ -298,7 +329,7 @@ class AuthorSectionTests(unittest.TestCase):
     def test_primary_ctas_are_prominent_and_mobile_copy_is_benefit_led(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        mobile_cta = re.search(r'<div class="mobile-buy">(.*?)</div>', html, re.DOTALL)
+        mobile_cta = re.search(r'<div class="mobile-buy"[^>]*>(.*?)</div>', html, re.DOTALL)
         self.assertIsNotNone(mobile_cta)
         self.assertIn("Quiero hablar con claridad", mobile_cta.group(1))
         self.assertRegex(
@@ -332,8 +363,16 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*position\s*:\s*absolute")
         self.assertRegex(css, r"\.preview-swipe-cue\s*\{[^}]*pointer-events\s*:\s*none")
         self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*infinite")
-        reduced_motion = css[css.rfind("@media(prefers-reduced-motion:reduce){"):]
-        self.assertRegex(reduced_motion, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation\s*:\s*none")
+        reduced_motion_rules = re.findall(r"@media\(prefers-reduced-motion:reduce\)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", css)
+        self.assertTrue(reduced_motion_rules)
+        self.assertRegex(
+            "\n".join(reduced_motion_rules),
+            r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation\s*:\s*none",
+        )
+        self.assertRegex(
+            "\n".join(reduced_motion_rules),
+            r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*transition\s*:\s*none",
+        )
 
     def test_mobile_banner_keeps_accessible_wordmark_and_checkout_action(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")

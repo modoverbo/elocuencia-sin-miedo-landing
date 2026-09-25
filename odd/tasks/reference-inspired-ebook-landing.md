@@ -165,16 +165,25 @@ RED was observed first for brand/hero assertions before source edits (expected m
 
 ### T8 — Sticky navigation and post-hero purchase bar
 
-- [ ] Keep an offer strip in the document flow so it scrolls away, then make the site header sticky as specified by the approved design.
-- [ ] Show a bottom purchase bar only after the visitor has passed the hero; ensure it does not obscure page content, the interactive preview, controls, accessibility focus, or reduced-motion expectations.
-- [ ] Reuse the exact same existing purchase CTA label and checkout destination; keep preview/navigation links functional and non-competing.
-- [ ] Add failing-first lifecycle/structural tests for sticky-header state, post-hero bar visibility, and consistent purchase destination/label.
+- [x] Add a top offer strip in normal document flow with only the owner-provided digital ebook terms (payment once, immediate access, 7-day guarantee); never invent price/discount or imply a physical copy. Make the header sticky beneath/after the strip so the strip scrolls away.
+- [x] Keep the bottom purchase bar hidden/inert while the hero is visible, show it after the hero exits on both desktop and mobile, and hide it again on reverse scroll. Respect keyboard focus when hiding, accessibility tree state, and prefers-reduced-motion.
+- [x] Suppress the bottom bar while preview controls or footer content are in view; preserve page/footer access in the viewport lifecycle behavior.
+- [ ] Confirm in browser at 320px / 390px / 1280px that the responsive bar does not cover controls/footer or introduce horizontal overflow (pending parent visual QA).
+- [x] Reuse the exact existing purchase CTA label and destination; preserve preview/navigation links and controls. Do not add social proof, checkout clicks, or unrelated T9 work.
+- [x] Add failing-first Python structure/style and Node lifecycle tests for top-strip/header order, hero visibility state, reverse scroll, preview/footer suppression, focus transfer/inert state, reduced motion, and consistent purchase destination/label.
 
-**Acceptance criteria:** the top offer strip scrolls normally; header remains available after scrolling; bottom CTA is absent while the hero is in view and appears after leaving it; no horizontal overflow or blocked content at 320px / 390px / 1280px; purchase links remain consistent. Run full Python/Node suites and `git diff --check`; do not click checkout.
+**Acceptance criteria:** the offer strip scrolls away normally and contains only the owner-provided ebook terms; header remains sticky after the strip scrolls away; the purchase bar is absent/inert during hero visibility, appears after hero exit on desktop and mobile, hides on reverse scroll and while preview controls/footer are in view, and never hides a focused action without an accessible focus destination. Reduced motion disables the bar transition. The exact purchase label and Hotmart URL stay consistent, preview controls still work, and no content/footer/control is obstructed or horizontally overflowed at 320px / 390px / 1280px. Run full Python/Node suites and `git diff --check`; do not click checkout.
 
 **Dependency:** T6–T7.
 
 **Route and trigger evidence:** delegated direct writer; sticky and viewport lifecycle behavior involves markup, styles, JavaScript, responsive and accessibility regression coverage.
+
+
+**Progress / verification:** T8 implementation and automated checks are complete; exact viewport/browser QA is pending parent verification. Added the owner-term strip in document flow and made the site header sticky; the strip itself has no invented price or discount. The checkout bar begins `hidden`, `inert`, and `aria-hidden`, becomes available only after the hero exits and both protected-region IntersectionObserver states are known and outside view, and hides while preview controls or footer are visible. A scroll/resize geometry fallback is used without IntersectionObserver. When suppression would hide a focused bar action, focus moves without scrolling to the visible hero CTA, preview “Abrir libro” control, or footer checkout CTA as applicable. CSS disables its transition for reduced-motion users, and the mobile bar uses a grid layout to preserve its two-column treatment.
+
+TDD evidence: RED was observed in the focused Node lifecycle suite when it showed the bar before the protected regions had initial viewport state and when focus incorrectly returned to the hero CTA instead of the visible preview control. After implementation, focused Node lifecycle suite — 4 passed. The existing preview Node suite needed its fake DOM expanded to model the new shared page-visibility watcher; after adapting that harness, `node --test tests/test_preview_swipe_cue.js` — 4 passed. Python markup assertions initially encoded pre-T8 mobile markup/reduced-motion structure; they were updated to assert the current hidden/inert bar, responsive layout and reduced-motion behavior. GREEN: `python3 -m unittest discover -s tests -v` — 16 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `node --test tests/test_post_hero_purchase_bar.js` — 4 passed; `git diff --check` — passed. CTA label and Hotmart destination remain consistent; no checkout clicked, no T9/social-proof content added. This worker could not access an available browser surface for 320px / 390px / 1280px screenshot/visual validation; parent visual measurements remain pending and are not claimed as passed.
+
+**Commit evidence:** pending work-unit commit.
 
 ### T9 — Evidence-backed review link or review section
 
@@ -190,4 +199,4 @@ RED was observed first for brand/hero assertions before source edits (expected m
 
 ## Next step
 
-T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA pending parent verification. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 is next; do not begin it until the parent authorizes it. T9 remains dependent on verified, owner-approved review evidence/destination. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.
+T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA pending parent verification. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 implementation and automated checks are prepared for work-unit commit; its 320px / 390px / 1280px browser QA is pending parent verification before T8 is fully closed. T9 remains dependent on verified, owner-approved review evidence/destination. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.

@@ -2,6 +2,73 @@
   'use strict';
 
   const byId = (id) => document.getElementById(id);
+  const heroSection = byId('inicio');
+  const purchaseBar = byId('post-hero-buy');
+  const heroPurchaseCta = byId('hero-purchase-cta');
+  const protectedPurchaseTargets = new Map([
+    [byId('preview-controls'), byId('preview-next')],
+    [byId('site-footer'), byId('footer-purchase-cta')],
+  ].filter(([region, target]) => region && target));
+  const protectedPurchaseRegions = [...protectedPurchaseTargets.keys()];
+  let heroVisible = true;
+  const protectedRegionVisibility = new Map(protectedPurchaseRegions.map((region) => [region, null]));
+  let purchaseBarVisible = false;
+
+  function updatePurchaseBar() {
+    if (!purchaseBar || !heroSection) return;
+    const shouldShow = !heroVisible && Array.from(protectedRegionVisibility.values()).every((visible) => visible === false);
+    if (shouldShow === purchaseBarVisible) return;
+
+    if (!shouldShow && purchaseBar.contains(document.activeElement)) {
+      const visibleProtectedRegion = protectedPurchaseRegions.find((region) => protectedRegionVisibility.get(region));
+      const focusTarget = heroVisible
+        ? heroPurchaseCta
+        : protectedPurchaseTargets.get(visibleProtectedRegion) || heroPurchaseCta;
+      focusTarget?.focus({ preventScroll: true });
+    }
+    purchaseBar.hidden = !shouldShow;
+    purchaseBar.inert = !shouldShow;
+    purchaseBar.setAttribute('aria-hidden', String(!shouldShow));
+    purchaseBar.classList.toggle('is-visible', shouldShow);
+    purchaseBarVisible = shouldShow;
+  }
+
+  function watchPurchaseBarVisibility() {
+    if (!purchaseBar || !heroSection) return;
+    const observedTargets = [heroSection, ...protectedPurchaseRegions];
+    if (window.IntersectionObserver) {
+      const observer = new window.IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.target === heroSection) heroVisible = entry.isIntersecting;
+          else if (protectedRegionVisibility.has(entry.target)) {
+            protectedRegionVisibility.set(entry.target, entry.isIntersecting);
+          }
+        }
+        updatePurchaseBar();
+      }, { threshold: 0 });
+      observedTargets.forEach((target) => observer.observe(target));
+      return;
+    }
+
+    const updateFromViewport = () => {
+      const viewportBottom = window.innerHeight || document.documentElement.clientHeight;
+      const intersectsViewport = (target) => {
+        const bounds = target.getBoundingClientRect();
+        return bounds.bottom > 0 && bounds.top < viewportBottom;
+      };
+      heroVisible = intersectsViewport(heroSection);
+      protectedPurchaseRegions.forEach((region) => {
+        protectedRegionVisibility.set(region, intersectsViewport(region));
+      });
+      updatePurchaseBar();
+    };
+    window.addEventListener('scroll', updateFromViewport, { passive: true });
+    window.addEventListener('resize', updateFromViewport);
+    updateFromViewport();
+  }
+
+  watchPurchaseBarVisibility();
+
   const bookElement = byId('flipbook');
   if (!bookElement) return;
 
