@@ -16,14 +16,62 @@
   const zoomImage = byId('zoom-image');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const swipeCue = byId('preview-swipe-cue');
-  let swipeCueActive = Boolean(swipeCue && !reducedMotion.matches);
-  if (swipeCueActive) swipeCue.classList.add('is-animated');
+  let swipeCueState = swipeCue ? (reducedMotion.matches ? 'suppressed' : 'pending') : 'disabled';
+  let swipeCueObserver = null;
+  let swipeCueFallbackCheck = null;
 
   function stopSwipeCue() {
-    if (!swipeCueActive) return;
-    swipeCueActive = false;
+    if (swipeCueState !== 'pending' && swipeCueState !== 'active') return;
+    swipeCueState = 'dismissed';
     swipeCue.classList.remove('is-animated');
     swipeCue.classList.add('is-dismissed');
+    removeSwipeCueVisibilityWatch();
+  }
+
+  function removeSwipeCueVisibilityWatch() {
+    if (swipeCueObserver) {
+      swipeCueObserver.disconnect();
+      swipeCueObserver = null;
+    }
+    if (swipeCueFallbackCheck) {
+      window.removeEventListener('scroll', swipeCueFallbackCheck);
+      window.removeEventListener('resize', swipeCueFallbackCheck);
+      swipeCueFallbackCheck = null;
+    }
+  }
+
+  function startSwipeCue() {
+    if (swipeCueState !== 'pending') return;
+    if (reducedMotion.matches) {
+      swipeCueState = 'suppressed';
+      removeSwipeCueVisibilityWatch();
+      return;
+    }
+    swipeCueState = 'active';
+    swipeCue.classList.add('is-animated');
+    removeSwipeCueVisibilityWatch();
+  }
+
+  function watchSwipeCueVisibility() {
+    if (swipeCueState !== 'pending') return;
+    if (window.IntersectionObserver) {
+      swipeCueObserver = new window.IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.target === bookElement && entry.isIntersecting)) {
+          startSwipeCue();
+        }
+      }, { threshold: 0.15 });
+      swipeCueObserver.observe(bookElement);
+      return;
+    }
+
+    swipeCueFallbackCheck = () => {
+      const bounds = bookElement.getBoundingClientRect();
+      const viewportBottom = window.innerHeight || document.documentElement.clientHeight;
+      if (bounds.bottom > 0 && bounds.top < viewportBottom) startSwipeCue();
+    };
+    window.addEventListener('scroll', swipeCueFallbackCheck);
+    window.addEventListener('resize', swipeCueFallbackCheck);
+    swipeCueFallbackCheck();
   }
 
   if (!window.St || !St.PageFlip) {
@@ -161,8 +209,14 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && zoom.open) zoom.close();
   });
+  watchSwipeCueVisibility();
   reducedMotion.addEventListener('change', ({ matches }) => {
-    if (matches) stopSwipeCue();
+    if (matches && swipeCueState === 'pending') {
+      swipeCueState = 'suppressed';
+      removeSwipeCueVisibilityWatch();
+    } else if (matches && swipeCueState === 'active') {
+      stopSwipeCue();
+    }
     pageFlip.getSettings().flippingTime = matches ? 120 : 760;
   });
 })();

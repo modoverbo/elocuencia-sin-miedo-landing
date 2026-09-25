@@ -50,27 +50,26 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 ### T2 — One-time swipe discoverability cue
 
-- [x] Add a one-time swipe animation/cue to the book preview to signal horizontal discoverability.
+- [x] Start the one-time swipe cue only after the preview enters the viewport. Reopened after the parent found that the original load-time animation could finish before a visitor reached the below-fold book preview; corrected with observer and fallback coverage.
 - [x] Stop the cue after the user's first relevant interaction and suppress motion when `prefers-reduced-motion` is active.
 - [x] Add regression tests for cue lifecycle and reduced-motion behavior using the existing Node test runner and Python markup suite.
 
 **Acceptance criteria**
 
 - The preview communicates that it can be swiped without displacing or obscuring the primary CTA.
+- The cue remains pending until the preview is visible; use `IntersectionObserver` with a viewport-checking scroll/resize fallback.
 - The cue runs at most once and stops immediately after user interaction with the preview.
 - Users requesting reduced motion do not receive the animated cue.
 - Test-first RED → GREEN → REFACTOR is observed for the behavior; the full applicable check is green.
 
-**Route and trigger evidence:** delegated direct writer; this task requires preparation across implementation and test files and is part of the multi-file writer scope.
-
 **Route and trigger evidence:** delegated direct writer; preparation spans implementation, markup, CSS, and lifecycle tests, and the task modifies multiple non-trivial files.
 
-**Progress / verification:** Implemented test-first. RED before source changes: `node --test tests/test_preview_swipe_cue.js` — both lifecycle tests failed because the cue did not start; `python3 -m unittest discover -s tests -v` — failed because the preview cue markup/style was absent. During GREEN, one Python assertion initially rejected a valid CSS animation declaration without its optional trailing semicolon; the assertion was corrected to accept the valid form. GREEN: `node --test tests/test_preview_swipe_cue.js` — 2 tests passed; `python3 -m unittest discover -s tests -v` — 4 tests passed; `git diff --check` — passed. Browser check at 390 × 844 showed the animated glyph at the preview hint, retained the fixed mobile CTA, and reported document width 375px (no horizontal overflow); a click on the actual preview dismissed the cue (`is-animated` removed and `is-dismissed` added). Reduced-motion at load and preference changes mid-cue are covered by the Node lifecycle tests; browser-level motion emulation was unavailable in this pass. No checkout action was performed. Authored source/test changes: 166 lines changed (additions plus deletions; generated files excluded).
+**Progress / verification:** Original T2 implementation committed as `a07cfd81f0aa5d85b80dca508d168b52d8f2e07f`, but the parent later identified a behavior gap: the cue started when `script.js` loaded, so its one-shot animation could be consumed before the below-fold preview became visible. Reopened and corrected the visibility-trigger criterion. Correction RED before correction source changes: `node --test tests/test_preview_swipe_cue.js` — 3 tests failed (cue animated before visibility; no observer lifecycle; fallback animated before visibility). Correction GREEN: `node --test tests/test_preview_swipe_cue.js` — 3 passed; `python3 -m unittest discover -s tests -v` — 4 passed; `git diff --check` — passed. Tests cover pending state until observer visibility, reduced motion becoming active while pending (which disconnects the observer), and scroll fallback when `IntersectionObserver` is absent. Browser check at 390 × 844 confirmed the cue had no animation at page load while preview top was 5,487px, started once preview entered the viewport (top 170px; animation `preview-swipe-cue-nudge`), and stopped on the preview-next interaction (`is-dismissed`, no animation); mobile CTA remained `Quiero hablar con claridad`, document width 375px. No checkout action was performed. Browser-level reduced-motion emulation was unavailable; load-time and pre-visibility changes are covered by Node tests. Corrective commit pending.
 
-**Rollback boundary:** Revert T2's `index.html`, `script.js`, `styles.css`, `tests/test_author_section.py`, and `tests/test_preview_swipe_cue.js` changes together to remove the cue and its regression coverage; leave the T1 author/CTA behavior, `.gitignore`, and `.engram/` untouched.
+**Rollback boundary:** The original T2 commit `a07cfd81f0aa5d85b80dca508d168b52d8f2e07f` adds the cue. Revert the corrective visibility-trigger commit to restore the prior load-time start behavior; revert both T2 commits together to remove the cue and tests. Leave T1 author/CTA behavior, `.gitignore`, and `.engram/` untouched.
 
-**Commit evidence:** pending; commit the T2 source/tests with this task document as one Conventional Commit, then record its identity here.
+**Commit evidence:** Original: `a07cfd81f0aa5d85b80dca508d168b52d8f2e07f` — `feat(preview): add one-time swipe discovery cue`. Correction: pending — `fix(preview): start swipe cue when book is visible` on `codex/author-first-cta-preview`.
 
 ## Next step
 
-T1 and T2 are implemented and verified; T1 is committed. Record the T2 commit identity in this document and full Engram mirror after committing. Then parent performs the T2 RDD assessment. Do not push or create a PR.
+T1 and T2 behavior are complete; commit the visibility-trigger correction and record its identity here and in the full Engram mirror. Parent performs the applicable RDD assessment afterward. Do not push or create a PR.
