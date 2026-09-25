@@ -111,7 +111,7 @@ class SalesLandingParser(HTMLParser):
 class AuthorSectionTests(unittest.TestCase):
     def test_landing_stylesheet_url_has_a_cache_busting_version(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertIn('href="styles.css?v=20260925-reference-v5"', html)
+        self.assertIn('href="styles.css?v=20260925-reference-v6"', html)
 
     def test_hash_navigation_reserves_space_beneath_sticky_header(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
@@ -339,7 +339,7 @@ class AuthorSectionTests(unittest.TestCase):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         hero = html[html.index('<section class="hero"'):html.index('</section>', html.index('<section class="hero"'))]
         self.assertIn('src="assets/arturo-modoverbo.png"', hero)
-        self.assertIn('alt="Arturo Valdéz, autor de Elocuencia sin miedo"', hero)
+        self.assertIn('alt="Arturo Valdés, autor de Elocuencia sin miedo"', hero)
         self.assertNotIn("hero-book-photo", hero)
         frame = re.search(r"\.hero-portrait-frame\s*\{([^{}]*)\}", css)
         self.assertIsNotNone(frame)
@@ -352,10 +352,10 @@ class AuthorSectionTests(unittest.TestCase):
         parsed.feed(html)
         hero = next(section for section in parsed.sections if "hero" in section["attributes"].get("class", "").split())
         self.assertEqual(parsed.sections[0], hero)
-        self.assertIn("Arturo Valdéz", " ".join(hero["text"]))
+        self.assertIn("Arturo Valdés", " ".join(hero["text"]))
         hero_text = re.sub(r"\s+", " ", " ".join(hero["text"]))
-        self.assertIn("Habla con claridad", hero_text)
-        self.assertIn("Quiero hablar con claridad", hero_text)
+        self.assertIn("Haz que tus ideas lleguen con claridad.", hero_text)
+        self.assertIn("QUIERO HABLAR CON CLARIDAD", hero_text)
         portrait = next(image for image in hero["images"] if "hero-portrait" in image.get("class", ""))
         self.assertEqual(portrait.get("src"), "assets/arturo-modoverbo.png")
         self.assertTrue((ROOT / portrait["src"]).is_file())
@@ -370,7 +370,7 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertGreaterEqual(len(parsed.checkout_links), 5)
         for link in parsed.checkout_links:
             visible_label = "".join(link["text"]).replace("↗", "").strip()
-            self.assertEqual(visible_label, "Quiero hablar con claridad")
+            self.assertEqual(visible_label.casefold(), "quiero hablar con claridad")
             self.assertEqual(
                 link["attributes"].get("href"),
                 "https://pay.hotmart.com/H107735669O?checkoutMode=2&off=s5txzdcx",

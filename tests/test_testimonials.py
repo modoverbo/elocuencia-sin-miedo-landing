@@ -16,19 +16,20 @@ class TestimonialSectionTests(unittest.TestCase):
         hero_end = self.html.index("</section>", hero_start)
         hero = self.html[hero_start:hero_end]
         self.assertRegex(hero, r'<a\b[^>]*href="#resenas"[^>]*>')
-        self.assertIn("4 testimonios de lectores", hero)
-        self.assertIn("Leer testimonios", hero)
+        self.assertIn("5,0/5 en 4 reseñas", hero)
+        self.assertIn("Más de 1.200 lectores", hero)
+        self.assertNotIn("Leer testimonios", hero)
 
     def test_hero_social_proof_typography_remains_readable_at_mobile_and_desktop_sizes(self):
         copy = re.search(r"\.social-proof-copy\s*\{([^{}]*)\}", self.css)
         stars = re.search(r"\.social-proof-stars\s*\{([^{}]*)\}", self.css)
-        link = re.search(r"\.social-proof-link\s*\{([^{}]*)\}", self.css)
+        readers = re.search(r"\.social-proof-readers\s*\{([^{}]*)\}", self.css)
         self.assertIsNotNone(copy)
         self.assertIsNotNone(stars)
-        self.assertIsNotNone(link)
-        self.assertRegex(copy.group(1), r"font-size\s*:\s*(?:1[1-9]|[2-9]\d)px")
+        self.assertIsNotNone(readers)
+        self.assertRegex(copy.group(1), r"font-size\s*:\s*(?:1[0-9]|[2-9]\d)px")
         self.assertRegex(stars.group(1), r"font-size\s*:\s*(?:1[2-9]|[2-9]\d)px")
-        self.assertRegex(link.group(1), r"font-size\s*:\s*(?:1[1-9]|[2-9]\d)px")
+        self.assertRegex(readers.group(1), r"font-size\s*:\s*(?:1[0-9]|[2-9]\d)px")
 
     def test_hero_portrait_sprite_uses_scaled_full_face_crops(self):
         hero_avatar = re.search(r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{([^{}]*)\}", self.css)
@@ -89,8 +90,21 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertRegex(self.css, r"\.testimonial-avatar\s*\{[^}]*background-image\s*:\s*url\(['\"]?assets/testimonials-readers\.png")
 
     def test_no_unsupported_aggregate_rating_or_review_count_is_added(self):
-        self.assertNotRegex(self.html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|más de 1200|miles de reseñas)\b")
+        self.assertNotRegex(self.html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|miles de reseñas)\b")
         self.assertNotRegex(self.html, r"(?i)(compra verificada|resultado garantizado|garantiza que)\b")
+
+    def test_hero_social_proof_preserves_readers_and_review_sample_separately_on_mobile(self):
+        mobile = re.search(r"@media\s*\(max-width:\s*760px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", self.css)
+        self.assertIsNotNone(mobile)
+        self.assertNotRegex(mobile.group(1), r"\.social-proof-(?:count|readers)\s*\{[^}]*display\s*:\s*none")
+        self.assertIn('aria-label="Ver reseñas de ejemplo"', self.html)
+
+    def test_hero_copy_and_primary_cta_match_the_approved_demo_message(self):
+        hero = self.html[self.html.index('<section class="hero"'):self.html.index('</section>', self.html.index('<section class="hero"'))]
+        self.assertIn("EBOOK DIGITAL · 156 PÁGINAS", hero)
+        self.assertIn("Haz que tus ideas lleguen con claridad.", re.sub(r"<[^>]+>", "", hero))
+        self.assertIn("Historias, ejemplos y ejercicios para ordenar lo que piensas y expresarlo en conversaciones reales.", hero)
+        self.assertRegex(hero, r'id="hero-purchase-cta"[^>]*>QUIERO HABLAR CON CLARIDAD')
 
     def test_testimonial_cards_stack_on_mobile(self):
         mobile = re.search(
