@@ -99,9 +99,9 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 ### T4 — Crop Arturo's portrait as a circle
 
-- [ ] Apply a circular CSS crop to the existing portrait image at mobile and desktop sizes; retain the shifted yellow accent and Arturo label outside the crop.
-- [ ] Remove the portrait's rectangular border and shadow without changing the source bitmap or surrounding author layout.
-- [ ] Add a focused regression check for circular shape and absent rectangular frame, and visually verify at 320px, 390px, and 1280px.
+- [x] Apply a circular CSS crop to the existing portrait image at mobile and desktop sizes; retain the shifted yellow accent and Arturo label outside the crop.
+- [x] Remove the portrait's rectangular border and shadow without changing the source bitmap or surrounding author layout.
+- [x] Add a focused regression check for circular shape and absent rectangular frame, and visually verify at 320px, 390px, and 1280px.
 
 **Acceptance criteria**
 
@@ -119,8 +119,8 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 **Rollback boundary:** Revert T4's portrait presentation/test changes together, leaving T1–T3, the original image asset, `.gitignore`, and `.engram/` untouched.
 
-**Commit evidence:** Pending until the task work-unit commit is created.
+**Commit evidence:** `1b65e8a` — `fix(author): crop portrait into a circle` on `codex/author-first-cta-preview`.
 
 ## Next step
 
-T1, T2, T3, and T4 are implemented and verified; record T4's commit identity after committing. RDD is disabled for this clone; do not run assessment or review. Do not push, create a PR, or deploy.
+T1, T2, T3, and T4 are implemented and verified; the latest work-unit commit is `1b65e8a`. RDD is disabled for this clone; do not run assessment or review. Do not push, create a PR, or deploy.
