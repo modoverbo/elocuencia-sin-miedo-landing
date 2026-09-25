@@ -114,6 +114,22 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Work-unit commit:** `9a90a6f3346369d602bec1caf828cda36d74fa8b` — `feat(landing): add owner-approved reader testimonials` on `codex/reference-inspired-ebook-landing`.
 
+#### T4 responsive badge readability correction (2026-09-25)
+
+- [x] Raise hero badge copy to 12px and stars to 12px (link text 11px) while keeping the mobile capsule compact at 320px / 384px widths.
+- [x] Scale and reposition the supplied screenshot sprite specifically for the small hero avatars so all four portrait crops show recognizable faces at desktop and mobile sizes; leave the larger testimonial-card portraits and source pixels unchanged.
+- [x] Add CSS regression guards for readable type and distinct scaled sprite positions.
+
+**Trigger / observed evidence:** parent visual QA at 384px and 1280px found the badge copy at 9px and stars at 10px too hard to read. The miniature avatar circles showed only face fragments because they reused full-resolution source coordinates at 24–30px display sizes.
+
+**Route:** delegated direct bounded follow-up to one stylesheet and focused regression test. Strict TDD remains enabled: observe the new guard fail before CSS changes; run the full Python/Node suites and `git diff --check`. Preserve quotes, attributions, ratings, cards, hero layout and CTA behavior. No browser QA by this worker; parent retains visual confirmation. No review, checkout, PR, push, or deployment.
+
+**RED:** `python3 -m unittest discover -s tests -p 'test_testimonials.py' -v` — 7 tests, 2 expected failures: the new guards detected 9px copy/10px stars and the absence of the scaled sprite.
+
+**GREEN:** Focused testimonial suite — 7 passed. Final `python3 -m unittest discover -s tests -v` — 34 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Desktop capsule avatars use one-third scale of the same sprite; mobile uses a 213×426px sprite scale for 24px portrait crops. Parent visual confirmation remains pending; this writer did not use a browser.
+
+**Commit evidence:** pending the correction work-unit commit.
+
 ### T5 — Remaining reference-inspired section flow
 
 - [x] Confirm the existing order follows hero → problem → method → preview/content → fit → offer → deeper author → FAQ → closing CTA; retain the real testimonial section as omitted until attributable material is supplied.

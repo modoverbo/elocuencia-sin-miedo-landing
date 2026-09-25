@@ -19,6 +19,46 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertIn("4 testimonios de lectores", hero)
         self.assertIn("Leer testimonios", hero)
 
+    def test_hero_social_proof_typography_remains_readable_at_mobile_and_desktop_sizes(self):
+        copy = re.search(r"\.social-proof-copy\s*\{([^{}]*)\}", self.css)
+        stars = re.search(r"\.social-proof-stars\s*\{([^{}]*)\}", self.css)
+        link = re.search(r"\.social-proof-link\s*\{([^{}]*)\}", self.css)
+        self.assertIsNotNone(copy)
+        self.assertIsNotNone(stars)
+        self.assertIsNotNone(link)
+        self.assertRegex(copy.group(1), r"font-size\s*:\s*(?:1[1-9]|[2-9]\d)px")
+        self.assertRegex(stars.group(1), r"font-size\s*:\s*(?:1[2-9]|[2-9]\d)px")
+        self.assertRegex(link.group(1), r"font-size\s*:\s*(?:1[1-9]|[2-9]\d)px")
+
+    def test_hero_portrait_sprite_uses_scaled_full_face_crops(self):
+        hero_avatar = re.search(r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{([^{}]*)\}", self.css)
+        self.assertIsNotNone(hero_avatar)
+        self.assertRegex(hero_avatar.group(1), r"background-size\s*:\s*296px\s+592px")
+        for name, position in (
+            ("santiago", r"-30px\s+-170px"),
+            ("valentina", r"-30px\s+-299px"),
+            ("daniel", r"-30px\s+-429px"),
+            ("isabel", r"-30px\s+-551px"),
+        ):
+            with self.subTest(name=name):
+                crop = re.search(rf"\.social-proof-avatars\s+\.reader-{name}\s*\{{([^{{}}]*)\}}", self.css)
+                self.assertIsNotNone(crop)
+                self.assertRegex(crop.group(1), rf"background-position\s*:\s*{position}")
+
+        mobile = re.search(r"@media\s*\(max-width:\s*760px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", self.css)
+        self.assertIsNotNone(mobile)
+        self.assertRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*background-size\s*:\s*213px\s+426px")
+        for name, position in (
+            ("santiago", r"-22px\s+-122px"),
+            ("valentina", r"-22px\s+-215px"),
+            ("daniel", r"-22px\s+-309px"),
+            ("isabel", r"-22px\s+-397px"),
+        ):
+            with self.subTest(mobile_name=name):
+                crop = re.search(rf"\.social-proof-avatars\s+\.reader-{name}\s*\{{([^{{}}]*)\}}", mobile.group(1))
+                self.assertIsNotNone(crop)
+                self.assertRegex(crop.group(1), rf"background-position\s*:\s*{position}")
+
     def test_four_exact_owner_supplied_quotes_and_attributions_are_displayed(self):
         reviews_start = self.html.index('id="resenas"')
         reviews_end = self.html.index("</section>", reviews_start)
