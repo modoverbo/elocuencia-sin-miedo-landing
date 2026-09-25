@@ -87,6 +87,8 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Progress / verification:** T3 complete. RED: focused `test_generated_author_book_illustration_is_disclosed_and_hero_keeps_original_portrait` failed before HTML/CSS changes because the deeper author image was not present. GREEN: `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` — 8 passed; full Python suite — 8 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `git diff --check` — passed. Generated asset visually inspected at 1122×1402: Arturo likeness, complete cover, and hands are acceptable; the existing cover title/design are recognizable and no extra endorsement/rating text or props were introduced. A local browser load exposed the intended alt and disclosure caption in the accessibility tree. Exact 320 / 390 / 1280 viewport crops were not available through this browser surface; the image ratio is 1122:1402 (0.8003), effectively matching the CSS `aspect-ratio:4/5` (0.8), and `height:auto` preserves intrinsic proportions without an intentional crop. No checkout was clicked. Cumulative authored diff against `main` is 427 lines (generated PNG excluded). The user explicitly approved a `size:exception` for this new redesign as one PR; this only resolves the size threshold and does not authorize PR creation, push, merge, or deploy.
 
+**Commit evidence:** `db5016cb0750f97d98c80485381d1695ab1f3bb0` — `feat(landing): add disclosed author book illustration` on `codex/reference-inspired-ebook-landing`.
+
 ### T4 — Real testimonial presentation
 
 - [ ] Add testimonial cards only after the owner supplies real attributable customer quotes and permission/context to identify them.
@@ -107,4 +109,4 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ## Next step
 
-T1 and T2 are committed. T3 is implemented and verified, with exact responsive viewport crops unavailable; record the CSS/intrinsic ratio evidence above. The user approved `single-pr` with a `size:exception` for this new feature. T5 remains, and T4 depends on real attributable testimonial material. No PR, push, merge, or deployment is authorized.
+T1–T3 are committed. T3’s exact responsive viewport crops were unavailable; its CSS/intrinsic ratio evidence is recorded above. The user approved `single-pr` with a `size:exception` for this new feature. T5 remains; T4 depends on real attributable testimonial material. No PR, push, merge, or deployment is authorized.
