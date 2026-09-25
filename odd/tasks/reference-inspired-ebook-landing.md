@@ -69,7 +69,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Progress / verification:** RED before production changes: Node preview lifecycle — 2 expected failures; focused Python suite — 1 expected cue-markup failure. GREEN: `node --test tests/test_preview_swipe_cue.js` — 4 passed; `python3 -m unittest discover -s tests -v` — 7 passed; `git diff --check` — passed. Browser checks at 320 / 390 / 1280 px showed no horizontal overflow (document widths 305 / 375 / 1265 px); at 320 and 390 the repeating cue is visible over the book with the static instruction and clear of the sticky CTA/controls, and desktop preview view shows the cue over the cover. CSS/DOM readback confirmed `pointer-events:none` and a repeating 1.8s animation. Clicking only the functional “Abrir la muestra” control advanced to page 2 and dismissed the cue; no checkout was clicked. Reduced-motion static instruction is covered by the Python markup check and Node preference lifecycle test.
 
-**Commit evidence:** Pending T2 work-unit commit.
+**Commit evidence:** `9d2290806f11ccf0e744c1373f613cb0278a9c95` — `feat(preview): add persistent swipe affordance` on `codex/reference-inspired-ebook-landing`.
 
 ### T3 — Generated Arturo-with-book visual
 
