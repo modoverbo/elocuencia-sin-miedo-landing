@@ -16,7 +16,8 @@ class TestimonialSectionTests(unittest.TestCase):
         hero_end = self.html.index("</section>", hero_start)
         hero = self.html[hero_start:hero_end]
         self.assertRegex(hero, r'<a\b[^>]*href="#resenas"[^>]*>')
-        self.assertIn("5,0/5 en 4 reseñas", hero)
+        self.assertIn('<span class="social-proof-count">4.9</span>', hero)
+        self.assertNotIn("en 4 reseñas", hero)
         self.assertIn("Más de 1.200 lectores", hero)
         self.assertNotIn("Leer testimonios", hero)
 
@@ -42,13 +43,17 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*width\s*:\s*24px")
         self.assertNotRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*background-size\s*:\s*\d+px")
 
-    def test_hero_social_proof_visibly_labels_its_example_figures(self):
+    def test_hero_social_proof_has_two_rows_and_adjacent_demo_disclosure(self):
         hero_start = self.html.index('<section class="hero"')
         hero_end = self.html.index("</section>", hero_start)
         hero = self.html[hero_start:hero_end]
         pill_start = hero.index('class="testimonial-social-proof"')
         pill_end = hero.index("</a>", pill_start)
-        self.assertIn("EJEMPLO", hero[pill_start:pill_end])
+        pill = hero[pill_start:pill_end]
+        self.assertRegex(pill, r'<span class="social-proof-rating"><span class="social-proof-count">4\.9</span><span class="social-proof-stars"[^>]*>★★★★★</span></span><span class="social-proof-readers">Más de 1\.200 lectores</span>')
+        self.assertNotIn("EJEMPLO", pill)
+        self.assertRegex(hero[pill_end:], r'^</a>\s*<p class="social-proof-disclosure">Demo educativa · reseñas y cifras ficticias</p>')
+        self.assertRegex(self.css, r"\.social-proof-rating\s*\{[^}]*display:\s*inline-flex;[^}]*align-items:\s*center;")
 
     def test_four_exact_owner_supplied_quotes_and_attributions_are_displayed(self):
         reviews_start = self.html.index('id="resenas"')
@@ -114,14 +119,14 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertIn("entorno de pruebas", readme)
 
     def test_no_unsupported_aggregate_rating_or_review_count_is_added(self):
-        self.assertNotRegex(self.html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|miles de reseñas)\b")
+        self.assertNotRegex(self.html, r"(?i)\b(?:1200\+|1\s?200\+|miles de reseñas)\b")
         self.assertNotRegex(self.html, r"(?i)(compra verificada|resultado garantizado|garantiza que)\b")
 
     def test_hero_social_proof_preserves_readers_and_review_sample_separately_on_mobile(self):
         mobile = re.search(r"@media\s*\(max-width:\s*760px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", self.css)
         self.assertIsNotNone(mobile)
         self.assertNotRegex(mobile.group(1), r"\.social-proof-(?:count|readers)\s*\{[^}]*display\s*:\s*none")
-        self.assertIn('aria-label="Ver reseñas de ejemplo"', self.html)
+        self.assertIn('aria-label="Ver reseñas ilustrativas"', self.html)
 
     def test_hero_copy_and_primary_cta_match_the_approved_demo_message(self):
         hero = self.html[self.html.index('<section class="hero"'):self.html.index('</section>', self.html.index('<section class="hero"'))]

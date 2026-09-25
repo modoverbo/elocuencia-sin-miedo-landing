@@ -295,7 +295,7 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertIn('href="#resenas"', html)
         self.assertIn('id="resenas"', html)
         self.assertEqual(html.count("class=\"testimonial-card\""), 4)
-        self.assertNotRegex(html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|más de 1200)\b")
+        self.assertNotRegex(html, r"(?i)\b(?:1200\+|1\s?200\+|más de 1200)\b")
     def test_landing_sections_follow_the_reference_sales_flow(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
