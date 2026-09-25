@@ -106,22 +106,16 @@ class SalesLandingParser(HTMLParser):
 
 
 class AuthorSectionTests(unittest.TestCase):
-    def test_author_portrait_is_circular_without_rectangular_frame(self):
+    def test_first_screen_author_portrait_stays_circular_without_frame(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        css = re.sub(r"/\*[\s\S]*?\*/", "", css)
-        portrait_rules = re.findall(r"\.author-portrait\b[^{}]*\{([^{}]*)\}", css)
-        self.assertTrue(portrait_rules, "Expected styles for the author portrait")
-
-        effective_declarations = {}
-        for rule in portrait_rules:
-            for declaration in rule.split(";"):
-                if ":" in declaration:
-                    property_name, value = declaration.split(":", 1)
-                    effective_declarations[property_name.strip().lower()] = value.strip().lower()
-
-        self.assertEqual(effective_declarations.get("border-radius"), "50%")
-        self.assertEqual(effective_declarations.get("border"), "none")
-        self.assertEqual(effective_declarations.get("box-shadow"), "none")
+        hero_portrait = re.search(r"\.hero-author-portrait\s*\{([^{}]*)\}", css)
+        self.assertIsNotNone(hero_portrait, "Expected a circular first-screen author portrait")
+        declarations = dict(
+            declaration.split(":", 1)
+            for declaration in hero_portrait.group(1).split(";")
+            if ":" in declaration
+        )
+        self.assertEqual(declarations.get("border-radius"), "50%")
 
     def test_sales_hero_leads_and_identifies_author_with_portrait(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -223,6 +217,25 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertEqual("".join(parsed.banner_links[1]["text"]).strip(), "Quiero hablar con claridad")
         self.assertIn("hotmart__button-checkout", action.get("class", "").split())
         self.assertTrue(action.get("href", "").startswith("https://pay.hotmart.com/"))
+
+    def test_generated_author_book_illustration_is_disclosed_and_hero_keeps_original_portrait(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        author_start = html.index('<section class="author ')
+        author_end = html.index("</section>", author_start)
+        author_markup = html[author_start:author_end]
+        hero = html[html.index('<section class="hero"'):author_start]
+
+        self.assertTrue((ROOT / "assets/arturo-valdez-holding-elocuencia-sin-miedo.png").is_file())
+        self.assertRegex(
+            author_markup,
+            r'<img class="author-book-illustration" src="assets/arturo-valdez-holding-elocuencia-sin-miedo\.png"[^>]*alt="Ilustración generada con IA de Arturo Valdéz sosteniendo Elocuencia sin miedo">',
+        )
+        self.assertRegex(
+            author_markup,
+            r'<figcaption class="generated-image-caption">Ilustración generada con IA; representa a Arturo con su libro\.</figcaption>',
+        )
+        self.assertIn('src="assets/arturo-modoverbo.png"', hero)
+        self.assertNotIn("arturo-valdez-holding-elocuencia-sin-miedo.png", hero)
 
 
 if __name__ == "__main__":

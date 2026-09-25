@@ -18,7 +18,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 - No fake testimonials, quotes, ratings, named buyers, credentials, or unsupported promises. T4 must wait for real attributable customer wording and permission/context to identify it.
 - Reference structure to adapt: hero → problem → method/content → offer → testimonials → author → FAQ/closing CTA. Preserve the functioning preview; retain Arturo in the first-screen hierarchy even if a deeper author section moves later.
 - No analytics/Clarity, checkout clicks, push, PR, or deployment.
-- Delivery strategy: `ask-on-risk`; no size exception is approved for this new feature. Do not create a PR. Each task closes with a Conventional Commit on this feature branch; stop if ordinary repository policy blocks a commit rather than assuming an exception.
+- Delivery strategy: `single-pr`; the user explicitly approved a `size:exception` for this new reference-inspired redesign as one PR exceeding 400 authored changed lines. This is not authorization to create a PR, push, merge, or deploy. Each task closes with a Conventional Commit on this feature branch.
 - Initial forecast: approximately 300 authored changed lines across the tasks, generated image excluded; this T1-era estimate is superseded by T2’s actual cumulative count below. Estimates are advisory, not hard task caps.
 
 ## Working configuration
@@ -65,7 +65,7 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Route and trigger evidence:** delegated direct writer; behavior touches the JavaScript lifecycle, preview markup/styles, and Node/Python regression tests, all non-trivial; preparation and implementation are performed by the single writer.
 
-**Delivery forecast:** Final pre-commit `git diff --numstat main` reports 375 authored changed lines cumulatively for T1+T2, including the tracked feature document, below the advisory ~400-line threshold. This T2 work unit can close without a size exception. Reassess before the next work-unit commit if the accumulated feature exceeds the threshold; no size exception is authorized for this feature.
+**Delivery forecast:** Final pre-commit `git diff --numstat main` reports 375 authored changed lines cumulatively for T1+T2, including the tracked feature document, below the advisory ~400-line threshold. This T2 work unit closed below the threshold. The user later explicitly approved a `size:exception` for the full reference-inspired redesign as one PR; this does not authorize PR creation, push, merge, or deploy.
 
 **Progress / verification:** RED before production changes: Node preview lifecycle — 2 expected failures; focused Python suite — 1 expected cue-markup failure. GREEN: `node --test tests/test_preview_swipe_cue.js` — 4 passed; `python3 -m unittest discover -s tests -v` — 7 passed; `git diff --check` — passed. Browser checks at 320 / 390 / 1280 px showed no horizontal overflow (document widths 305 / 375 / 1265 px); at 320 and 390 the repeating cue is visible over the book with the static instruction and clear of the sticky CTA/controls, and desktop preview view shows the cue over the cover. CSS/DOM readback confirmed `pointer-events:none` and a repeating 1.8s animation. Clicking only the functional “Abrir la muestra” control advanced to page 2 and dismissed the cue; no checkout was clicked. Reduced-motion static instruction is covered by the Python markup check and Node preference lifecycle test.
 
@@ -73,12 +73,19 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ### T3 — Generated Arturo-with-book visual
 
-- [ ] Create a new on-brand image of Arturo holding the ebook/book, keeping the supplied portrait as the identity reference and avoiding unsupported claims/props.
-- [ ] Integrate only after visually checking the generated asset and responsive crops.
+- [x] Inspect `assets/arturo-modoverbo.png` as the identity reference and `assets/cover.webp` as the cover reference; generate a new editorial/illustrative portrait of Arturo holding this book with the existing Modo Verbo palette. Do not invent title text, endorsements, ratings, promises, or unrelated props; preserve the cover design and inspect title/face/hands before selection.
+- [x] Save the selected asset under a new descriptive path in `assets/`; never overwrite either reference. Integrate it only in the deeper author section. Preserve `assets/arturo-modoverbo.png` in the first-screen hero.
+- [x] Add meaningful Spanish alt text and a visible caption identifying the image as an AI-generated illustration, not a documentary photograph.
+- [x] Add a focused regression test covering local asset existence, generated-image alt/caption, and the original hero portrait source.
+- [x] Check responsive behavior for 320px, 390px, and 1280px when available; if exact viewports are unavailable, record that limitation honestly and verify the image/CSS aspect-ratio relationship.
 
-**Acceptance criteria:** generated asset is clearly a visual enhancement, does not replace the first-screen author identification, and passes visual crop checks at mobile/desktop sizes.
+**Acceptance criteria:** generated asset is an illustrative enhancement based on the supplied identity and cover references; title, face, and hands are visually acceptable; it appears only in the deeper author section with an accurate visible generated/illustrative disclosure; original circular portrait remains the hero image. Python and Node suites, `git diff --check`, and available responsive crop checks pass. Generated binary image is excluded from authored-line delivery totals.
 
 **Dependency:** T1. Do not modify the original portrait source.
+
+**Route and trigger evidence:** delegated direct writer; requires image generation plus non-trivial markup, style, and regression-test changes.
+
+**Progress / verification:** T3 complete. RED: focused `test_generated_author_book_illustration_is_disclosed_and_hero_keeps_original_portrait` failed before HTML/CSS changes because the deeper author image was not present. GREEN: `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` — 8 passed; full Python suite — 8 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `git diff --check` — passed. Generated asset visually inspected at 1122×1402: Arturo likeness, complete cover, and hands are acceptable; the existing cover title/design are recognizable and no extra endorsement/rating text or props were introduced. A local browser load exposed the intended alt and disclosure caption in the accessibility tree. Exact 320 / 390 / 1280 viewport crops were not available through this browser surface; the image ratio is 1122:1402 (0.8003), effectively matching the CSS `aspect-ratio:4/5` (0.8), and `height:auto` preserves intrinsic proportions without an intentional crop. No checkout was clicked. Cumulative authored diff against `main` is 427 lines (generated PNG excluded). The user explicitly approved a `size:exception` for this new redesign as one PR; this only resolves the size threshold and does not authorize PR creation, push, merge, or deploy.
 
 ### T4 — Real testimonial presentation
 
@@ -100,4 +107,4 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ## Next step
 
-T2 is verified and within the current delivery strategy; T3 and T5 remain, and T4 depends on real attributable testimonial material. Reassess accumulated delivery size before the next work-unit commit.
+T1 and T2 are committed. T3 is implemented and verified, with exact responsive viewport crops unavailable; record the CSS/intrinsic ratio evidence above. The user approved `single-pr` with a `size:exception` for this new feature. T5 remains, and T4 depends on real attributable testimonial material. No PR, push, merge, or deployment is authorized.
