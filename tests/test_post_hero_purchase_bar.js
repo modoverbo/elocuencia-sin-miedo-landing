@@ -37,6 +37,7 @@ class FakeElement {
 function loadLandingBar({ intersectionObserver = true } = {}) {
   const elements = new Map();
   const windowListeners = new Map();
+  elements.set('footer-purchase-cta', null);
   const document = {
     activeElement: null,
     getElementById(id) {
@@ -131,8 +132,8 @@ test('reverse scroll hides the bar and transfers focus from its CTA to the hero 
   assert.equal(heroCta.focusOptions.preventScroll, true);
 });
 
-test('focused bar action moves to the visible region checkout or preview action when suppressed', () => {
-  const { barCta, footerCta, observers, previewNext } = loadLandingBar();
+test('focused bar action moves to preview action or hero when suppressed without a footer checkout', () => {
+  const { barCta, footerCta, heroCta, observers, previewNext } = loadLandingBar();
   const observer = observers[0];
   observer.trigger(documentElement(observer, 'preview-controls'), false);
   observer.trigger(documentElement(observer, 'site-footer'), false);
@@ -146,7 +147,8 @@ test('focused bar action moves to the visible region checkout or preview action 
   observer.trigger(documentElement(observer, 'inicio'), false);
   barCta.focus();
   observer.trigger(documentElement(observer, 'site-footer'), true);
-  assert.equal(footerCta.document.activeElement, footerCta);
+  assert.equal(footerCta, null);
+  assert.equal(heroCta.document.activeElement, heroCta);
 });
 
 function documentElement(observer, id) {

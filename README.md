@@ -17,9 +17,15 @@ Los botones usan el enlace de oferta facilitado por el productor (`H107735669O`,
 ## Decisiones editoriales
 
 - Propuesta de valor concreta, escenarios reconocibles, recorrido del contenido, muestra real, ajuste de expectativas, oferta y preguntas frecuentes.
-- Sin precio inventado, testimonios ficticios, cuentas regresivas ni promesas de resultados garantizados.
+- La landing sirve como demo educativa. Sus testimonios y retratos son ficticios e ilustrativos; la valoración, el recuento de lectores y las credenciales del autor también son contenido de ejemplo, no evidencia verificada. Reemplázalos por testimonios autorizados y datos comprobables antes de usar la plantilla para vender.
+- Los cuatro retratos en `assets/testimonials/` son imágenes generadas y ficticias para esta demo; no representan a las personas nombradas en las reseñas.
+- No se inventa un precio ni se usan cuentas regresivas o promesas de resultados garantizados.
 - La vista previa empieza con la portada cerrada y usa [StPageFlip 2.0.7](https://github.com/Nodlik/StPageFlip) (licencia MIT incluida en `assets/vendor/`) para mostrar dos páginas enfrentadas en PC y una en celular. Permite avanzar o retroceder con botones y gestos; un toque amplía una página legible. En la página 14 difuminada aparece la invitación a continuar en Hotmart. No avanza automáticamente y respeta movimiento reducido.
 - Todas las imágenes del libro proceden del PDF final; el mockup de la portada es una composición CSS, no una fotografía de una edición impresa inexistente.
+
+## Uso educativo y producción
+
+Antes de publicar esta plantilla como una landing de venta, verifica y reemplaza las reseñas, retratos, cifras y credenciales de ejemplo por evidencia real y autorizada. La demo conserva el destino de checkout de Hotmart existente (`H107735669O`, oferta `s5txzdcx`); no es un entorno de pruebas ni una garantía de que el destino no permita una compra. No hagas clic en él para revisar la demo.
 
 ## Referencias de investigación
 
@@ -27,5 +33,3 @@ Los botones usan el enlace de oferta facilitado por el productor (`H107735669O`,
 - [Hotmart: integración y limitación con upsells](https://help.hotmart.com/en/article/43449924104205/como-associar-uma-pagina-do-hotmart-pages-como-pagina-de-vendas-do-meu-produto)
 - [Baymard: claridad del producto](https://baymard.com/blog/ecommerce-ux-audit)
 - [Baymard: incertidumbre antes del pago](https://baymard.com/blog/payment-ux)
-
-

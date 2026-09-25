@@ -41,14 +41,14 @@ Effective TDD: strict ON from project AGENTS instructions; exact test runners ar
 ## Progress
 
 - [x] T1 — hero heading, details, CTA hierarchy, canonical spelling, and linked sample-specific social proof implemented; focused Python tests RED before code and GREEN afterward; complete Python and Node suites passed.
-- [ ] T2 — pending.
+- [x] T2 — disclosed fictional testimonial section and footer note, separate optimized generated portraits, owner-stated author claims, redundant footer CTA removal with footer-region sticky-bar suppression preserved, and README demo/checkout boundary documented; observed expected RED before changes, then full verification passed.
 
 ### Work-unit evidence
 
 | Task | Commit | Focused checks | Runtime harness | Rollback boundary |
 |------|--------|----------------|-----------------|------------------|
-| T1 | Awaiting commit | `python3 -m unittest tests.test_testimonials tests.test_author_section -v` — 36 passed after observed RED (6 intended failures before source change); full Python suite — 36 passed; Node suites — 8 passed; `git diff --check` — passed. | N/A — static landing markup/styles with no task-specific runtime boundary. | Revert the hero/social-proof copy, its styling, and its regression assertions only. |
-| T2 | Pending | Pending | N/A — static landing markup/styles with no task-specific runtime boundary. | Pending |
+| T1 | `66a853ca33757d10dacca160317bcfa0315259ea` | `python3 -m unittest tests.test_testimonials tests.test_author_section -v` — 36 passed after observed RED (6 intended failures before source change); full Python suite — 36 passed; Node suites — 8 passed; `git diff --check` — passed. | N/A — static landing markup/styles with no task-specific runtime boundary. | Revert the hero/social-proof copy, its styling, and its regression assertions only. |
+| T2 | Awaiting commit | `python3 -m unittest discover -s tests -v` — 39 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; image decode/uniqueness validation — 4 distinct valid WebP files; `git diff --check` — passed. | N/A — static landing markup/styles with no task-specific runtime boundary; sticky-bar semantics covered by Node harness. | Revert the T2 testimonial/author/footer copy, portrait assets and style mappings, footer observation change, and associated docs/tests only; retain T1. |
 
 ## Next step
 

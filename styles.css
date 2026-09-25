@@ -56,10 +56,6 @@ h1 em, h2 em { color: var(--forest); font-style: italic; }
 .testimonial-social-proof { display: inline-flex; max-width: 100%; align-items: center; gap: 12px; margin-bottom: 24px; padding: 8px 14px 8px 8px; border: 1px solid var(--line); border-radius: 999px; background: #fffdf8; text-align: left; }
 .social-proof-avatars { display: flex; padding-left: 2px; }
 .social-proof-avatars .testimonial-avatar { width: 30px; height: 30px; margin-left: -2px; border-width: 2px; background-size: 296px 592px; }
-.social-proof-avatars .reader-santiago { background-position: -30px -170px; }
-.social-proof-avatars .reader-valentina { background-position: -30px -299px; }
-.social-proof-avatars .reader-daniel { background-position: -30px -429px; }
-.social-proof-avatars .reader-isabel { background-position: -30px -551px; }
 .social-proof-copy { display: flex; min-width: 0; flex-direction: column; color: var(--forest); font-size: 12px; font-weight: 600; line-height: 1.35; }
 .social-proof-stars { color: #A77A22; font-size: 12px; letter-spacing: .08em; }
 .social-proof-readers { color: var(--muted); font-size: 11px; font-weight: 500; }
@@ -169,11 +165,12 @@ h1 em, h2 em { color: var(--forest); font-style: italic; }
 .testimonial-person > span:last-child { display: flex; flex-direction: column; gap: 2px; }
 .testimonial-person strong { color: var(--forest); font-family: var(--serif); font-size: 14px; letter-spacing: .08em; }
 .testimonial-person > span:last-child > span { color: var(--muted); font-size: 10px; letter-spacing: .06em; }
-.testimonial-avatar { display: inline-block; flex: 0 0 auto; width: 64px; height: 64px; border: 2px solid var(--paper); border-radius: 50%; background-image: url('assets/testimonials-readers.png'); background-repeat: no-repeat; background-size: 888px 1776px; box-shadow: 0 0 0 1px rgba(23,66,54,.2); }
-.reader-santiago { background-position: -90px -510px; }
-.reader-valentina { background-position: -90px -897px; }
-.reader-daniel { background-position: -90px -1288px; }
-.reader-isabel { background-position: -90px -1652px; }
+.demo-disclosure { max-width: 620px; margin: 14px auto 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.testimonial-avatar { display: inline-block; flex: 0 0 auto; width: 64px; height: 64px; border: 2px solid var(--paper); border-radius: 50%; background-position: center; background-repeat: no-repeat; background-size: cover; box-shadow: 0 0 0 1px rgba(23,66,54,.2); }
+.reader-santiago { background-image: url('assets/testimonials/santiago-demo.webp'); }
+.reader-valentina { background-image: url('assets/testimonials/valentina-demo.webp'); }
+.reader-daniel { background-image: url('assets/testimonials/daniel-demo.webp'); }
+.reader-isabel { background-image: url('assets/testimonials/isabel-demo.webp'); }
 
 .author { background: var(--petroleum); color: var(--paper); }
 .author-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(36px, 7vw, 90px); }
@@ -198,8 +195,8 @@ h1 em, h2 em { color: var(--forest); font-style: italic; }
 .site-footer { padding: 30px 0; background: var(--ink); color: var(--paper); }
 .footer-inner { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 14px; text-align: center; }
 .footer-wordmark { color: var(--paper); }
-.footer-cta { min-height: 44px; padding: 12px 20px; border: 1px solid var(--gold); border-radius: 3px; color: var(--paper); font-size: 12px; font-weight: 700; }
 .footer-inner p { max-width: 100%; margin: 0; color: var(--stone); font-size: 10px; }
+.footer-inner .footer-demo-note { max-width: 560px; color: var(--paper); line-height: 1.6; }
 
 a.hotmart-fb.hotmart__button-checkout { display: inline-flex !important; min-height: 44px; align-items: center; justify-content: center; border: 1px solid var(--gold) !important; border-radius: 3px; background: var(--forest) !important; color: var(--paper) !important; font-family: var(--sans); font-size: 12px !important; font-weight: 700 !important; line-height: 1.35 !important; text-decoration: none; box-shadow: none !important; }
 .header-buy.hotmart__button-checkout { font-size: 10px !important; }
@@ -226,10 +223,6 @@ a.hotmart-fb.hotmart__button-checkout { display: inline-flex !important; min-hei
   .facts-grid p:nth-child(2) { border-right: 0; }
   .testimonial-social-proof { gap: 8px; padding-right: 10px; }
   .social-proof-avatars .testimonial-avatar { width: 24px; height: 24px; background-size: 213px 426px; }
-  .social-proof-avatars .reader-santiago { background-position: -22px -122px; }
-  .social-proof-avatars .reader-valentina { background-position: -22px -215px; }
-  .social-proof-avatars .reader-daniel { background-position: -22px -309px; }
-  .social-proof-avatars .reader-isabel { background-position: -22px -397px; }
   .social-proof-copy { font-size: 11px; }
   .social-proof-readers { font-size: 10px; }
   .section-heading, .preview-grid, .offer-card, .author-grid, .faq-grid, .testimonial-grid { grid-template-columns: 1fr; gap: 26px; }

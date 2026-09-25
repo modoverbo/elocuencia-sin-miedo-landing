@@ -7,7 +7,7 @@
   const heroPurchaseCta = byId('hero-purchase-cta');
   const protectedPurchaseTargets = new Map([
     [byId('preview-controls'), byId('preview-next')],
-    [byId('site-footer'), byId('footer-purchase-cta')],
+    [byId('site-footer'), heroPurchaseCta],
   ].filter(([region, target]) => region && target));
   const protectedPurchaseRegions = [...protectedPurchaseTargets.keys()];
   let heroVisible = true;

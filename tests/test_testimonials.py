@@ -31,34 +31,13 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertRegex(stars.group(1), r"font-size\s*:\s*(?:1[2-9]|[2-9]\d)px")
         self.assertRegex(readers.group(1), r"font-size\s*:\s*(?:1[0-9]|[2-9]\d)px")
 
-    def test_hero_portrait_sprite_uses_scaled_full_face_crops(self):
+    def test_hero_portraits_use_separate_local_assets_at_mobile_size(self):
         hero_avatar = re.search(r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{([^{}]*)\}", self.css)
         self.assertIsNotNone(hero_avatar)
-        self.assertRegex(hero_avatar.group(1), r"background-size\s*:\s*296px\s+592px")
-        for name, position in (
-            ("santiago", r"-30px\s+-170px"),
-            ("valentina", r"-30px\s+-299px"),
-            ("daniel", r"-30px\s+-429px"),
-            ("isabel", r"-30px\s+-551px"),
-        ):
-            with self.subTest(name=name):
-                crop = re.search(rf"\.social-proof-avatars\s+\.reader-{name}\s*\{{([^{{}}]*)\}}", self.css)
-                self.assertIsNotNone(crop)
-                self.assertRegex(crop.group(1), rf"background-position\s*:\s*{position}")
-
+        self.assertRegex(hero_avatar.group(1), r"width\s*:\s*30px")
         mobile = re.search(r"@media\s*\(max-width:\s*760px\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}", self.css)
         self.assertIsNotNone(mobile)
-        self.assertRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*background-size\s*:\s*213px\s+426px")
-        for name, position in (
-            ("santiago", r"-22px\s+-122px"),
-            ("valentina", r"-22px\s+-215px"),
-            ("daniel", r"-22px\s+-309px"),
-            ("isabel", r"-22px\s+-397px"),
-        ):
-            with self.subTest(mobile_name=name):
-                crop = re.search(rf"\.social-proof-avatars\s+\.reader-{name}\s*\{{([^{{}}]*)\}}", mobile.group(1))
-                self.assertIsNotNone(crop)
-                self.assertRegex(crop.group(1), rf"background-position\s*:\s*{position}")
+        self.assertRegex(mobile.group(1), r"\.social-proof-avatars\s+\.testimonial-avatar\s*\{[^}]*width\s*:\s*24px")
 
     def test_four_exact_owner_supplied_quotes_and_attributions_are_displayed(self):
         reviews_start = self.html.index('id="resenas"')
@@ -85,9 +64,38 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertLess(offer_start, reviews_start)
         self.assertLess(reviews_start, author_start)
         self.assertEqual(self.html.count('id="resenas"'), 1)
-        self.assertIn("assets/testimonials-readers.png", self.css)
-        self.assertTrue((ROOT / "assets/testimonials-readers.png").is_file())
-        self.assertRegex(self.css, r"\.testimonial-avatar\s*\{[^}]*background-image\s*:\s*url\(['\"]?assets/testimonials-readers\.png")
+        for name in ("santiago", "valentina", "daniel", "isabel"):
+            with self.subTest(name=name):
+                asset = f"assets/testimonials/{name}-demo.webp"
+                avatar = re.search(rf"\n\.reader-{name}\s*\{{([^{{}}]*)\}}", self.css)
+                self.assertIsNotNone(avatar)
+                self.assertIn(asset, avatar.group(1))
+                self.assertTrue((ROOT / asset).is_file())
+
+    def test_demo_disclosure_identifies_fictional_testimonials_portraits_and_figures(self):
+        reviews_start = self.html.index('id="resenas"')
+        reviews_end = self.html.index("</section>", reviews_start)
+        reviews = self.html[reviews_start:reviews_end]
+        footer = self.html[self.html.index("<footer"):self.html.index("</footer>")]
+        for text, region in (("personas, reseñas y cifras son ficticias e ilustrativas", reviews), ("evidencia verificada antes de vender", footer)):
+            with self.subTest(text=text):
+                self.assertIn(text, region)
+
+    def test_author_claims_use_owner_supplied_facts_and_canonical_name(self):
+        author_start = self.html.index('<section class="author ')
+        author_end = self.html.index("</section>", author_start)
+        author = self.html[author_start:author_end]
+        self.assertIn("Arturo Valdés", author)
+        self.assertIn("experto en comunicación efectiva y expresión oral", author)
+        self.assertIn("más de 20 años", author)
+        self.assertIn("más de 50.000 personas", author)
+
+    def test_readme_sets_demo_evidence_boundary_without_claiming_hotmart_is_sandboxed(self):
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("son ficticios e ilustrativos", readme)
+        self.assertIn("evidencia verificada", readme)
+        self.assertIn("H107735669O", readme)
+        self.assertIn("entorno de pruebas", readme)
 
     def test_no_unsupported_aggregate_rating_or_review_count_is_added(self):
         self.assertNotRegex(self.html, r"(?i)\b(?:4\.9|4,9|1200\+|1\s?200\+|miles de reseñas)\b")

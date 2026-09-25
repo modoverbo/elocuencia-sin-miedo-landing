@@ -158,7 +158,7 @@ class AuthorSectionTests(unittest.TestCase):
         ):
             with self.subTest(declaration=declaration):
                 self.assertRegex(shared.group(1), declaration)
-        self.assertRegex(css, r"\.footer-cta\s*\{[^}]*min-height\s*:\s*44px")
+        self.assertNotRegex(css, r"\.footer-cta\s*\{")
         self.assertNotRegex(css, r"\.closing\s+\.button\s*\{[^}]*background\s*:\s*var\(--gold\)")
         self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*background\s*:\s*var\(--paper\)")
         self.assertRegex(css, r"\.mobile-buy:not\(\[hidden\]\)\s*\{[^}]*color\s*:\s*var\(--forest\)")
@@ -217,7 +217,9 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertIn('id="preview-controls"', html)
         self.assertIn('id="site-footer"', html)
         self.assertIn('id="preview-next"', html)
-        self.assertIn('id="footer-purchase-cta"', html)
+        self.assertNotIn('id="footer-purchase-cta"', html)
+        self.assertIn("Demo educativa", html)
+        self.assertIn("© 2026 Elocuencia sin miedo.", html)
         self.assertRegex(css, r"@media\s*\(prefers-reduced-motion:\s*reduce\)")
 
     def test_editorial_brand_uses_green_gold_palette_and_display_swap_fonts(self):
@@ -360,7 +362,7 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertEqual(portrait.get("src"), "assets/arturo-modoverbo.png")
         self.assertTrue((ROOT / portrait["src"]).is_file())
         self.assertIn("hero-author-caption", html)
-        self.assertNotRegex(html, r"(?i)(20 años|50[ .]?000 personas|50 mil personas)")
+        self.assertNotRegex(html, r"(?i)(resultado garantizado|garantiza que)")
     def test_primary_purchase_cta_repeats_across_sections_and_offer_states_owner_terms(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         parsed = SalesLandingParser()
@@ -445,7 +447,7 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertTrue((ROOT / "assets/edition/arturo-holding-book.webp").is_file())
         self.assertNotIn('src="assets/edition/arturo-holding-book.webp"', hero)
         self.assertIn('src="assets/edition/arturo-holding-book.webp"', author_markup)
-        self.assertIn('alt="Arturo Valdéz sosteniendo Elocuencia sin miedo"', author_markup)
+        self.assertIn('alt="Arturo Valdés sosteniendo Elocuencia sin miedo"', author_markup)
         self.assertIn('src="assets/arturo-modoverbo.png"', hero)
         self.assertNotIn("arturo-valdez-holding-elocuencia-sin-miedo.png", html)
     def test_offer_mockup_is_explicitly_labeled_digital_pdf(self):
