@@ -163,12 +163,14 @@ RED was observed first for brand/hero assertions before source edits (expected m
 
 **Commit evidence:** `441840d49146208a21aa4e76dd7cae3680b37120` — `feat(landing): apply green-gold editorial identity` on `codex/reference-inspired-ebook-landing`.
 
+**Responsive QA follow-up:** Parent's exact viewport checks verified 320px / 390px / 1280px document scroll widths of 305px / 375px / 1265px respectively, with no horizontal overflow. At each top viewport the green-gold Arturo hero/CTA is visible; the site header is sticky, the owner-terms strip is in normal flow, and the purchase bar is `display:none` while the hero is visible. Screenshots were captured for 320px top, after-hero, preview-controls and footer states, 390px / 1280px top, and desktop post-scroll; not every measured state has a screenshot. This supersedes the earlier pending exact viewport note. No checkout was clicked.
+
 ### T8 — Sticky navigation and post-hero purchase bar
 
 - [x] Add a top offer strip in normal document flow with only the owner-provided digital ebook terms (payment once, immediate access, 7-day guarantee); never invent price/discount or imply a physical copy. Make the header sticky beneath/after the strip so the strip scrolls away.
 - [x] Keep the bottom purchase bar hidden/inert while the hero is visible, show it after the hero exits on both desktop and mobile, and hide it again on reverse scroll. Respect keyboard focus when hiding, accessibility tree state, and prefers-reduced-motion.
 - [x] Suppress the bottom bar while preview controls or footer content are in view; preserve page/footer access in the viewport lifecycle behavior.
-- [ ] Confirm in browser at 320px / 390px / 1280px that the responsive bar does not cover controls/footer or introduce horizontal overflow (pending parent visual QA).
+- [x] Confirm in browser at 320px / 390px / 1280px that the responsive bar does not cover controls/footer or introduce horizontal overflow.
 - [x] Reuse the exact existing purchase CTA label and destination; preserve preview/navigation links and controls. Do not add social proof, checkout clicks, or unrelated T9 work.
 - [x] Add failing-first Python structure/style and Node lifecycle tests for top-strip/header order, hero visibility state, reverse scroll, preview/footer suppression, focus transfer/inert state, reduced motion, and consistent purchase destination/label.
 
@@ -185,6 +187,8 @@ TDD evidence: RED was observed in the focused Node lifecycle suite when it showe
 
 **Commit evidence:** `521e8a61616ebdbdcf8fa40d41d78545381846ab` — `feat(landing): add accessible post-hero purchase bar` on `codex/reference-inspired-ebook-landing`.
 
+**Parent responsive QA follow-up:** At 320px / 390px / 1280px, document scroll widths were 305px / 375px / 1265px (no horizontal overflow). On initial hero view the bottom purchase bar is `display:none`; the terms strip remains in normal flow and the sticky header stays at top 0. At 320px after scrolling two pages, hero bottom was -600, terms strip bottom -1432, header top 0, and the bar used `display:grid` at y=672 with height 68px without covering content. When preview controls were visible (top 295 / bottom 339), the bar was `aria-hidden=true` / `display:none`; when footer was visible at y=448, the bar was likewise hidden. At 390px after scroll the bar used grid and header remained top 0; pressing Home returned `scrollY=0` and hid the bar. At 1280px after scroll the bar used `display:flex` at y=706, with header top 0 and no overflow. Screenshots exist for 320px top / after-hero / preview-controls / footer, 390px and 1280px top, plus desktop post-scroll; screenshots were not captured for every measured state. The first desktop scroll started from a preview hash state, but the observed header/bar state was valid. No checkout was clicked.
+
 ### T9 — Evidence-backed review link or review section
 
 - [ ] Add only a verified, owner-authorized review destination and/or supplied attributable review content; do not invent rating counts, stars, quotations, people, photos, or endorsements.
@@ -199,4 +203,4 @@ TDD evidence: RED was observed in the focused Node lifecycle suite when it showe
 
 ## Next step
 
-T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA pending parent verification. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 implementation and automated checks are committed in `521e8a61616ebdbdcf8fa40d41d78545381846ab`; its 320px / 390px / 1280px browser QA is pending parent verification before T8 is fully closed. T9 remains dependent on verified, owner-approved review evidence/destination. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.
+T1–T3, T5, and T6 are complete; T7 implementation and automated checks are complete, with exact responsive viewport QA confirmed by parent. The caption contrast correction `f2cf2f9630bd06266944c78f077f9238bbb0f821` and parent's post-fix DOM/computed-style measurements at 320px / 390px / 1280px remain recorded under T3; no post-fix caption screenshot is claimed. T4 remains blocked until real attributable testimonial material and permission/context are supplied. T8 implementation and automated checks are committed in `521e8a61616ebdbdcf8fa40d41d78545381846ab`; its 320px / 390px / 1280px browser QA is confirmed by parent, including bar suppression over the preview controls/footer and reverse-scroll dismissal. T9 remains dependent on verified, owner-approved review evidence/destination. The user approved `single-pr` with a `size:exception` for this feature; no PR, push, merge, or deployment is authorized.
