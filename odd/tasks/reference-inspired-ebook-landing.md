@@ -248,7 +248,7 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **GREEN:** Changed the landing stylesheet href to `styles.css?v=20260925-reference-v2`. `python3 -m unittest discover -s tests -v` — 20 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Parent owns browser revalidation; this follow-up makes no visual QA claim.
 
-**Commit evidence:** pending.
+**Commit evidence:** `bd7ec48752a579ad3af2bba7fd4ed86ab3f0f599` — `fix(landing): bust stale stylesheet cache` on `codex/reference-inspired-ebook-landing`.
 
 ## Next step
 
