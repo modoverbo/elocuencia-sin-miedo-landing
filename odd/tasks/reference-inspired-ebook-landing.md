@@ -49,6 +49,8 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 **Progress / verification:** Implementation and automated checks complete; viewport verification is partial. RED: before source edits, `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` failed for the expected old hero/author order and secondary hero button. GREEN: `python3 -m unittest discover -s tests -v` — 7 passed; `node --test tests/test_preview_swipe_cue.js` — 3 passed; `git diff --check` — passed. Browser review in the available fixed mobile CUA viewport showed Arturo Valdéz and the primary CTA on the first screen, the CTA clear of the sticky banner after tightening narrow-mobile vertical spacing, the offer card terms visible in one column, and the preview responding to its “Abrir la muestra” control. No checkout was clicked. This sub-agent browser surface did not expose viewport resizing or desktop view, so the requested exact 320px / 390px / 1280px checks remain unverified; do not report them as passed. Source/test diff is 196 authored changed lines; with this 91-line ODD document, T1 is approximately 287 authored changed lines, below the advisory ~400-line forecast.
 
+**Commit evidence:** `e69bb4a05d94881abfa9e47b0a63bd4d42445b3b` — `feat(landing): unify purchase CTA and offer card` on `codex/reference-inspired-ebook-landing`.
+
 ### T2 — Stronger preview touch/open animation
 
 - [ ] Improve visual feedback when a visitor touches or opens the book preview without obscuring primary conversion UI.
@@ -88,4 +90,4 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ## Next step
 
-Complete a responsive visual readback at 390px and desktop 1280px when a viewport-capable browser is available; T1 implementation/tests are otherwise ready for parent review. Then defer T2–T5 to separate work units; T4 still depends on real attributable testimonial material.
+Complete a responsive visual readback at 390px and desktop 1280px when a viewport-capable browser is available; T1 implementation/tests are committed and ready for parent review. Then defer T2–T5 to separate work units; T4 still depends on real attributable testimonial material.
