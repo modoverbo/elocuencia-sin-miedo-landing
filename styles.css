@@ -119,3 +119,39 @@ a.button.hotmart-fb,a.header-buy.hotmart-fb{font-family:Poppins,Arial,sans-serif
   .author-copy h2{font-size:clamp(36px,9vw,50px)}
   .author-copy p{font-size:13px}
 }
+
+/* Lead with the person behind the method, while keeping the book's palette. */
+.author{position:relative;overflow:hidden;background:radial-gradient(ellipse at 18% 48%,#34372f 0,transparent 48%),var(--ink);padding-block:clamp(58px,7vw,96px)}
+.author .shell{position:relative;z-index:1}
+.author .section-kicker{color:var(--yellow)}
+.author-grid{grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr);gap:clamp(52px,8vw,124px)}
+.author-photo{max-width:450px;margin-left:15px}
+.author-photo::before{inset:9% -6% -6% 10%;transform:rotate(-3deg)}
+.author-portrait{border:1px solid rgba(249,246,237,.28);box-shadow:0 24px 58px rgba(0,0,0,.28)}
+.author-photo-label{position:absolute;left:-15px;bottom:22px;padding:11px 15px;background:var(--yellow);color:var(--ink);font-size:9px;font-weight:700;letter-spacing:.12em;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.author-copy{max-width:660px}
+.author-copy .tiny-label{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid rgba(237,205,82,.5);letter-spacing:.12em}
+.author-copy h2{font-size:clamp(42px,4.8vw,70px);max-width:620px}
+.author-copy p{color:#e0dfd7}
+
+/* Filled purchase links lead; sample navigation and book controls stay secondary. */
+a.button.button-dark,
+a.button.button-yellow,
+a.header-buy{min-height:62px;padding:17px 26px!important}
+.hero-actions>a.button-dark{min-height:64px;padding-inline:28px!important}
+.hero-actions>a.button-outline{min-height:54px;padding-inline:21px!important}
+.preview-controls button{min-height:44px}
+.mobile-buy a{min-height:48px;align-items:center}
+
+@media(max-width:760px){
+  .author-grid{grid-template-columns:1fr;gap:46px}
+  .author-photo{width:min(78%,330px);margin:0 auto 0 13px}
+  .author-photo-label{left:-10px;bottom:16px}
+  .hero-actions>a.button-dark{min-height:64px}
+  .hero-actions>a.button-outline{min-height:54px}
+}
+
+@media(max-width:440px){
+  .mobile-buy{justify-content:flex-end}
+  .mobile-buy>span{display:none}
+}
