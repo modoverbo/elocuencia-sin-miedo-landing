@@ -229,10 +229,11 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 - [x] Omit `#resenas`, reader opinions links, and any reviews section while no genuine attributable review source and permission exist. Remove secondary marketing buttons such as “Ver muestra”/“Explorar”; preserve functional preview controls.
 - [x] Preserve exact Hotmart URL `https://pay.hotmart.com/H107735669O?checkoutMode=2&off=s5txzdcx`, repeated primary CTA text, owner-provided one-time payment/immediate access/7-day guarantee, 156-page PDF claim, all 13 corrected preview pages plus lock page, StPageFlip settings, zoom, keyboard/touch behavior, persistent non-intercepting cue, reduced-motion support, post-hero purchase bar and its preview/footer/focus suppression behavior.
 - [x] Add failing-first regression coverage for solo first-screen portrait and later holding image; sticky mobile header CTA; missing testimonial/review/secondary marketing content; responsive non-preview image sizing and non-overlapping footer; reference sequence; CTA/terms; unchanged preview integrity and purchase-bar lifecycle.
+- [x] Record parent visual QA for the implemented viewports and interactions, with screenshot coverage, measured states, and untested limitations explicitly distinguished below.
 
 **Authorization/configuration:** User explicitly authorized this corrective rebuild on `codex/reference-inspired-ebook-landing`; no further approval is needed. Direct delegated single-writer route because rebuilding the markup, styles, and tests spans multiple non-trivial files. Strict TDD is enabled by workspace instructions (RED → GREEN → REFACTOR). RDD is disabled; do not run or enable it. Delivery remains `single-pr` with previously approved `size:exception`; no PR, push, merge, checkout click, or deploy. No remote operation is authorized.
 
-**Acceptance criteria:** the landing has a restrained centered portrait-led first screen and coherent reference-inspired section sequence, with no oversized image overlap or footer collision, no hidden mobile header CTA at 320px, and no fabricated reviews or proof. All non-preview imagery remains proportional; StPageFlip's own page dimensions and all preview interactions remain intact. The same Hotmart path and owner-provided terms are retained with no numeric price, discount, unprovided bonus, urgency, or credential. Functional checks pass. Parent performs required browser QA at 320×740, 390×844, 384×824, and 1280×800 for every section and interactive preview; this task must leave that visual QA pending until parent reports it.
+**Acceptance criteria:** the landing has a restrained centered portrait-led first screen and coherent reference-inspired section sequence, with no oversized image overlap or footer collision, no hidden mobile header CTA at 320px, and no fabricated reviews or proof. All non-preview imagery remains proportional; StPageFlip's own page dimensions and all preview interactions remain intact. The same Hotmart path and owner-provided terms are retained with no numeric price, discount, unprovided bonus, urgency, or credential. Functional checks pass. Parent browser evidence and its exact viewport/state/screenshot coverage are recorded under **Final parent visual QA** below; do not imply every section was screenshot at every width or that untested physical/live-checkout behavior passed.
 
 **Route and trigger evidence:** delegated direct writer; T10 touches multiple non-trivial markup/style/test files and combines source preparation with implementation.
 
@@ -280,10 +281,34 @@ The user rejected the prior T7/T8/T9 presentation despite recorded responsive/br
 
 **RED:** `python3 -m unittest discover -s tests -p 'test_author_section.py' -k hash_navigation -v` — failed because the root `html` rule had `scroll-behavior: smooth` but lacked `scroll-padding-top`.
 
-**GREEN:** Added `scroll-padding-top:80px` to the existing root rule; `styles.css?v=20260925-reference-v4`. Focused test passed; full Python suite — 26 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Reduced-motion continues to set `scroll-behavior:auto`. No browser QA is claimed by this worker. Parent will verify `#inicio` plus 390px / 1280px.
+**GREEN:** Added `scroll-padding-top:80px` to the existing root rule; `styles.css?v=20260925-reference-v4`. Focused test passed; full Python suite — 26 passed; `node --test tests/test_preview_swipe_cue.js tests/test_post_hero_purchase_bar.js` — 8 passed; `git diff --check` — passed. Reduced-motion continues to set `scroll-behavior:auto`. No browser QA is claimed by this worker; the parent follow-up is recorded under **Final parent visual QA** below.
 
 **Commit evidence:** `a29523fc70cbabcbcf5e5e05f46930a563ffb1a1` — `fix(landing): offset hash targets below sticky header` on `codex/reference-inspired-ebook-landing`.
 
+## Final parent visual QA (2026-09-25)
+
+The parent reports the final v4 stylesheet loaded. This record separates full screenshots and interactions from DOM/computed-style measurements; it does not imply every section was screenshotted at every width.
+
+| Viewport / source version | Observed coverage | Evidence boundary |
+|---|---|---|
+| 320×740, v4 | Clicking the brand to `#inicio` left the portrait top at y=112, below the sticky header bottom at y=80; the bottom purchase bar was hidden. Document scroll width 305px. | Parent browser check. |
+| 384×824, v3 visual style before root-only v4 offset | Screenshots: hero, problem, method, statement, preview, content, offer, author, FAQ, closing, footer. Portrait frame 160px; no previous image stretching; mockup white background blended into ivory; method cards one column. Checkout backgrounds computed as `rgb(23, 66, 54)`, `background-image:none`; footer checkout CTA min-height 44px. | Screenshot and computed-style checks; not every listed section screenshot at all widths. |
+| 384×824, final v4 | Document scroll width 369px; sampled headings, cards, footer and adjacent sections had no horizontal spills/overlaps. Preview showed the non-intercepting `is-animated` cue before interaction; controls advanced 1→2 and zoom/open-close worked before size refinement. After refinement on desktop, controls advanced through pages 2–3, cue dismissed and purchase bar hidden while controls were visible. | DOM/layout measurements plus interaction checks; no physical touch simulation. |
+| 390×844, final v4 | Document scroll width 375px; sampled page had no horizontal spills or adjacent section overlaps. | Parent DOM checks; not a screenshot of every section. |
+| 1280×800, final v4 | Document scroll width 1265px; sampled page had no horizontal spills or adjacent section overlaps. Desktop screenshots: hero, preview, offer and author. | Footer was checked on mobile, not in a desktop screenshot. |
+
+**Image dimensions (parent measurements; original assets unedited):**
+
+| Viewport width | Solo portrait | Offer mockup (natural 1305×1206) | Holding image (natural 1536×1024) |
+|---:|---:|---:|---:|
+| 320 | 132×132 | 150×139 | 255×170 |
+| 390 | 148×148 | 195×180 | 325×217 |
+| 1280 | 168×168 | 288×266 | 497×331 |
+
+Additional parent checks: FAQ expanded to its supplied answer; footer purchase bar remained hidden and did not collide. Reduced-motion behavior is supported by the existing CSS/Node tests only; no browser reduced-motion check was reported. No live checkout was clicked. No real physical-touch test was performed. The page/section screenshots do not cover every section at each viewport.
+
+**Status:** T10/T11/T12 visual and functional evidence is recorded at the scope above. Final owner visual acceptance remains the next step; publication/deployment is not authorized. T4 remains blocked and no reader reviews are displayed.
+
 ## Next step
 
-T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`. Parent has visually checked 320px sections and preview before the hash fix; the `#inicio` anchor recheck at 320px plus 390px / 1280px remains pending. Preserve parent browser evidence under T11/T12 and do not claim visual verification of the final hash offset until parent confirms. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
+T10 through T12 source changes are committed as `169657c`, `bd7ec48`, `1d37ed0`, and `a29523f`; parent final v4 browser evidence is recorded above, including the 320px `#inicio` offset and 384px / 390px / 1280px layout checks. The next step is owner visual acceptance. No live checkout, physical-touch, or reduced-motion browser test is claimed; publication/deployment remains unauthorized. T4 remains blocked until genuine attributable testimonial source wording and permission/context are supplied, and no review content is shown. The approved single-PR size exception authorizes no PR, push, merge, checkout click, or deployment.
