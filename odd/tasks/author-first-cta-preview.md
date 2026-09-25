@@ -11,6 +11,8 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 - Keep book navigation controls visually secondary to the primary CTA.
 - Add a one-time preview swipe cue that stops after user interaction and respects reduced-motion preferences.
 - No analytics or Clarity integration in this feature.
+- Mobile brand layout: center the existing wordmark in the full mobile header; repeat the wordmark centered in the fixed banner's left segment, with the yellow CTA on the right and its label centered in both axes.
+- Preserve desktop layout, existing navigation/checkout semantics, and avoid horizontal overflow at 320px, 375px, and 390px viewports.
 - Delivery strategy: `single-pr` with the user's explicit `size:exception` approval for this feature's >400-line range; do not push or create a PR. Close each implementation task with its own Conventional Commit on the feature branch.
 - Forecast: approximately 160 authored changed lines across implementation and tests (generated files excluded); planning estimate only, not a hard cap.
 
@@ -70,6 +72,31 @@ Move the Arturo author section ahead of the hero, strengthen primary call-to-act
 
 **Commit evidence:** Original: `a07cfd81f0aa5d85b80dca508d168b52d8f2e07f` — `feat(preview): add one-time swipe discovery cue`. Correction: `0267e556a16c0c566eefaca1c23a0680c8d2bbb2` — `fix(preview): start swipe cue when book is visible` on `codex/author-first-cta-preview`.
 
+### T3 — Center mobile wordmark and fixed CTA
+
+- [x] Center the header wordmark across the full mobile header width without changing desktop navigation or branding.
+- [x] Replace the fixed banner's plain-text brand with the existing accessible wordmark, centered in the left segment; keep the yellow CTA on the right with centered label text.
+- [x] Verify no horizontal overflow at 320px, 375px, and 390px; retain accessible link names and checkout target.
+
+**Acceptance criteria**
+
+- At mobile widths, the header wordmark is horizontally centered against the viewport, not merely aligned to the left content edge.
+- The fixed banner presents the same wordmark centered in its left segment and the yellow CTA in its right segment.
+- CTA text is centered horizontally and vertically, fully visible, and remains `Quiero hablar con claridad`.
+- Header/footer/navigation and checkout semantics are preserved; the desktop layout remains unchanged.
+- Browser layout checks at 320px, 375px, 390px, and desktop show no horizontal overflow or overlap.
+- Test-first RED → GREEN → REFACTOR is observed and all specified automated checks pass.
+
+**Route and trigger evidence:** delegated direct writer; preparation and implementation span HTML, responsive CSS, semantic regression tests, and multi-viewport verification, satisfying the ODD multi-file writer and preparation triggers.
+
+**Applicable checks:** `node --test tests/test_preview_swipe_cue.js`; `python3 -m unittest discover -s tests -v`; `git diff --check`; added focused mobile-brand structural tests; browser computed-layout checks at 320px, 375px, 390px, and desktop where available.
+
+**Progress / verification:** Implemented test-first. Baseline before T3: `node --test tests/test_preview_swipe_cue.js` — 3 passed; `python3 -m unittest discover -s tests -v` — 4 passed; `git diff --check` — passed. RED after adding the banner structure test and before source changes: `python3 -m unittest discover -s tests -v` — 1 failure because the banner had only one anchor instead of the required wordmark and checkout links. GREEN after implementation/refactor: Node — 3 passed; Python — 5 passed; `git diff --check` — passed. The added HTML parser checks accessible wordmark and checkout links without source-string matching. A first green attempt exposed that an existing mobile author test incorrectly selected only the last `max-width:760px` block; it now checks the responsive rule independently of media-block ordering. Browser computed-layout and screenshots at 320px, 375px, 390px, and 1280px showed the mobile header logo centered (0px offset), banner wordmark centered in the left grid track (0px/0.01px offset), CTA text/box centered in both axes with exact copy and visible bounds, and no document overflow. Desktop nav and header CTA remain visible, mobile banner hidden, and wordmark remains in its desktop position. Commit pending.
+
+**Rollback boundary:** Revert T3's mobile header/banner markup, responsive styles, focused tests, and task-record additions together; leave T1/T2 commits and `.gitignore`/`.engram/` untouched.
+
+**Commit evidence:** pending — one Conventional Commit for T3 markup, responsive styles, focused tests, and this task update.
+
 ## Next step
 
-T1 and T2 behavior are complete, with both T2 commit identities recorded above. The committed range was assessed at 453 changed lines (`medium`, `review_due=true`, `slice_budget_reached`) before this tracking update. The user approved `size:exception` for one PR. Commit this tracking update, then reassess and follow the native review continuation. Do not push or create a PR.
+T1, T2, and T3 are implemented and verified. Record T3's commit identity here and in the full Engram mirror. RDD is disabled for this clone; no assessment or review is due. Do not push, create a PR, or deploy.

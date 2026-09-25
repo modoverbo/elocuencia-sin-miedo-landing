@@ -21,6 +21,41 @@ class SectionParser(HTMLParser):
             self.images.append(attributes)
 
 
+class MobileBrandParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_header = False
+        self.in_mobile_banner = False
+        self.current_link = None
+        self.header_wordmarks = []
+        self.banner_links = []
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        classes = attributes.get("class", "").split()
+        if tag == "header":
+            self.in_header = True
+        if tag == "div" and "mobile-buy" in classes:
+            self.in_mobile_banner = True
+        if tag == "a" and self.in_header and "wordmark" in classes:
+            self.header_wordmarks.append(attributes)
+        if tag == "a" and self.in_mobile_banner:
+            self.current_link = {"attributes": attributes, "text": []}
+            self.banner_links.append(self.current_link)
+
+    def handle_data(self, data):
+        if self.current_link is not None:
+            self.current_link["text"].append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "a":
+            self.current_link = None
+        elif tag == "header":
+            self.in_header = False
+        elif tag == "div" and self.in_mobile_banner:
+            self.in_mobile_banner = False
+
+
 class AuthorSectionTests(unittest.TestCase):
     def test_author_section_precedes_hero_with_local_portrait(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -59,11 +94,9 @@ class AuthorSectionTests(unittest.TestCase):
 
     def test_author_layout_collapses_to_one_column_on_mobile(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
-        mobile_rules = css[css.rfind("@media(max-width:760px){"):]
-        self.assertTrue(mobile_rules)
         self.assertRegex(
-            mobile_rules,
-            r"\.author-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
+            css,
+            r"@media\(max-width:760px\)[\s\S]*?\.author-grid\s*\{[^}]*grid-template-columns\s*:\s*1fr",
         )
 
     def test_preview_hint_contains_a_reduced_motion_aware_swipe_cue(self):
@@ -76,6 +109,25 @@ class AuthorSectionTests(unittest.TestCase):
         self.assertRegex(css, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation:[^}]*\b1\s*;?")
         reduced_motion = css[css.rfind("@media(prefers-reduced-motion:reduce){"):]
         self.assertRegex(reduced_motion, r"\.preview-swipe-cue\.is-animated\s*\{[^}]*animation\s*:\s*none")
+
+    def test_mobile_banner_keeps_accessible_wordmark_and_checkout_action(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parsed = MobileBrandParser()
+        parsed.feed(html)
+
+        self.assertEqual(len(parsed.header_wordmarks), 1)
+        self.assertEqual(parsed.header_wordmarks[0].get("href"), "#inicio")
+        self.assertEqual(parsed.header_wordmarks[0].get("aria-label"), "Elocuencia sin miedo, inicio")
+        self.assertEqual(len(parsed.banner_links), 2)
+
+        brand = parsed.banner_links[0]["attributes"]
+        action = parsed.banner_links[1]["attributes"]
+        self.assertIn("wordmark", brand.get("class", "").split())
+        self.assertEqual(brand.get("href"), "#inicio")
+        self.assertEqual(brand.get("aria-label"), "Elocuencia sin miedo, inicio")
+        self.assertEqual("".join(parsed.banner_links[1]["text"]).strip(), "Quiero hablar con claridad")
+        self.assertIn("hotmart__button-checkout", action.get("class", "").split())
+        self.assertTrue(action.get("href", "").startswith("https://pay.hotmart.com/"))
 
 
 if __name__ == "__main__":

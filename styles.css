@@ -169,3 +169,14 @@ a.header-buy{min-height:62px;padding:17px 26px!important}
 @media(prefers-reduced-motion:reduce){
   .preview-swipe-cue.is-animated{animation:none!important}
 }
+
+@media(max-width:760px){
+  .site-header .header-inner{position:relative;justify-content:center}
+  .site-header .header-inner>.wordmark{position:absolute;left:50%;transform:translateX(-50%)}
+  .site-header .header-buy{display:none!important}
+  .mobile-buy{display:grid;grid-template-columns:minmax(74px,1fr) minmax(0,2fr);justify-content:stretch;gap:12px;padding-inline:clamp(12px,4vw,19px)}
+  .mobile-buy>.mobile-buy-wordmark{display:inline-flex!important;min-height:0;padding:0!important;justify-self:center;color:var(--paper)!important;background:transparent!important;border-radius:0;box-shadow:none!important;text-decoration:none!important;white-space:normal;line-height:1.04;font-size:clamp(9px,2.9vw,11px);letter-spacing:-.06em}
+  .mobile-buy-wordmark em{color:inherit;font-size:clamp(10px,3vw,12px)}
+  .mobile-buy-wordmark .wordmark-dot{width:6px;height:6px;right:-10px;top:-1px}
+  .mobile-buy>a.mobile-buy-cta{display:flex!important;width:100%;min-width:0;min-height:48px;box-sizing:border-box;align-items:center;justify-content:center;padding:8px 10px!important;line-height:1.2!important;text-align:center;white-space:normal!important}
+}
