@@ -106,6 +106,53 @@ class SalesLandingParser(HTMLParser):
 
 
 class AuthorSectionTests(unittest.TestCase):
+    def test_landing_sections_follow_sales_flow_with_sequential_kickers(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parsed = SalesLandingParser()
+        parsed.feed(html)
+
+        expected_order = ["hero", "recognition", "journey", "preview", "inside", "fit", "offer", "author", "faq", "closing"]
+        actual_order = [
+            next(
+                name
+                for name in expected_order
+                if name in section["attributes"].get("class", "").split()
+            )
+            for section in parsed.sections
+        ]
+        self.assertEqual(actual_order, expected_order)
+
+        kicker_numbers = []
+        for section in parsed.sections:
+            match = re.search(r"\b(\d{2})\s*/", " ".join(section["text"]))
+            kicker_numbers.append(match.group(1) if match else None)
+        self.assertEqual(kicker_numbers, [f"{number:02d}" for number in range(1, 11)])
+
+    def test_landing_sections_have_unique_ids_and_internal_links_resolve(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parsed = SalesLandingParser()
+        parsed.feed(html)
+
+        section_ids = [section["attributes"].get("id") for section in parsed.sections]
+        self.assertTrue(all(section_ids), "Each landing section needs a stable in-page anchor")
+        self.assertEqual(len(section_ids), len(set(section_ids)))
+
+        all_ids = set(re.findall(r'\bid="([^"]+)"', html))
+        internal_targets = re.findall(r'href="#([^"]+)"', html)
+        self.assertTrue(internal_targets)
+        self.assertTrue(all(target in all_ids for target in internal_targets))
+
+    def test_testimonial_section_remains_absent_without_attributable_content(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parsed = SalesLandingParser()
+        parsed.feed(html)
+        self.assertFalse(
+            any(
+                "testimonial" in " ".join(section["attributes"].values()).lower()
+                for section in parsed.sections
+            )
+        )
+
     def test_first_screen_author_portrait_stays_circular_without_frame(self):
         css = (ROOT / "styles.css").read_text(encoding="utf-8")
         hero_portrait = re.search(r"\.hero-author-portrait\s*\{([^{}]*)\}", css)

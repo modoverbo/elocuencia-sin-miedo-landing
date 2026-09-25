@@ -100,13 +100,21 @@ The current landing needs a stronger sales hierarchy inspired by the flow of srl
 
 ### T5 — Remaining reference-inspired section flow
 
-- [ ] Reorder existing problem, method/content, offer, deeper author, FAQ, and closing conversion content to follow the reference-inspired sequence while preserving the original book-preview interaction and stable navigation targets.
-- [ ] Keep all new or repeated purchase links on the same checkout destination and prevent competing secondary marketing CTAs.
+- [x] Confirm the existing order follows hero → problem → method → preview/content → fit → offer → deeper author → FAQ → closing CTA; retain the real testimonial section as omitted until attributable material is supplied.
+- [x] Add stable IDs to each major landing section, preserve all existing IDs, and ensure in-page links resolve.
+- [x] Add consistent opening and closing sequence markers (`01 /` and `10 /`) while preserving the numbered section kickers between them.
+- [x] Keep all purchase links on the same checkout destination, retain functional preview navigation, and prevent competing secondary marketing CTAs.
 
-**Acceptance criteria:** visitors can follow the adapted hero → problem → method/content → offer → (real testimonials only) → deeper author → FAQ/closing CTA flow; internal navigation IDs remain valid and existing interactive book preview remains usable.
+**Acceptance criteria:** visitors can follow the adapted hero → problem → method/content → offer → (real testimonials only, omitted until supplied) → deeper author → FAQ → closing CTA flow; stable internal section IDs are unique and all in-page links resolve; the interactive preview controls remain usable and all purchase links retain one label and target.
 
-**Dependency:** T1 and T4 evidence availability; T4 content may be omitted if not supplied.
+**Dependency:** T1; T4 remains blocked on genuine attributable customer quotes and permission/context, so no testimonial section or social-proof content is displayed.
+
+**Route and trigger evidence:** delegated direct writer; preparation spanned section markup, page anchors, and structural tests, with two non-trivial files changed.
+
+**Progress / verification:** T5 complete. RED before the markup edits: focused `python3 -m unittest discover -s tests -p 'test_author_section.py' -v` failed as expected because the hero and closing sections lacked sequence numbers and three landing sections lacked stable IDs; the no-testimonials regression passed. GREEN after markup changes: focused author/structure suite — 11 passed; full Python suite — 11 passed; `node --test tests/test_preview_swipe_cue.js` — 4 passed; `git diff --check` — passed. Existing source order already matched the requested hierarchy, so no unnecessary reorder was made. Added IDs `reconocimiento`, `para-ti`, and `cierre`, plus sequence markers `01 /` and `10 /`; existing preview IDs, controls, CTA label/destination, and no-secondary-marketing-CTA policy remain unchanged. Browser accessibility-tree inspection confirmed the full order, all purchase links point to the same Hotmart URL, the preview controls remain present, and no testimonial section is rendered. The available local browser screenshot showed the refreshed hero, circular Arturo portrait, and unchanged brand treatment. This CUA surface did not expose a viewport override, so exact 320px / 390px / 1280px visual checks remain unavailable and are not claimed as passed. No checkout was clicked.
+
+**Commit evidence:** pending T5 commit.
 
 ## Next step
 
-T1–T3 are committed. T3’s exact responsive viewport crops were unavailable; its CSS/intrinsic ratio evidence is recorded above. The user approved `single-pr` with a `size:exception` for this new feature. T5 remains; T4 depends on real attributable testimonial material. No PR, push, merge, or deployment is authorized.
+T1–T3 are committed; T5 implementation and verification are complete pending its Conventional Commit. T3’s exact responsive viewport crops and T5’s exact 320px / 390px / 1280px viewport checks were unavailable; their respective image-ratio and structural/browser evidence is recorded above. T4 remains blocked until real attributable testimonial material and permission/context are supplied. The user approved `single-pr` with a `size:exception` for this new feature. No PR, push, merge, or deployment is authorized.
