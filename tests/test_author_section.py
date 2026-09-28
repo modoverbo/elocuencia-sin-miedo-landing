@@ -108,7 +108,39 @@ class SalesLandingParser(HTMLParser):
             self.current_checkout_link = None
 
 
+class SocialMetadataParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.metadata = {}
+        self.canonical_urls = []
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if tag == "meta":
+            key = attributes.get("property") or attributes.get("name")
+            if key:
+                self.metadata[key] = attributes.get("content")
+        elif tag == "link" and attributes.get("rel") == "canonical":
+            self.canonical_urls.append(attributes.get("href"))
+
+
 class AuthorSectionTests(unittest.TestCase):
+    def test_social_preview_uses_absolute_versioned_cover_metadata(self):
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        parser = SocialMetadataParser()
+        parser.feed(html)
+        expected_image = "https://modoverbo.vercel.app/assets/edition/cover-social-v2.jpg"
+
+        self.assertEqual(parser.canonical_urls, ["https://modoverbo.vercel.app/"])
+        self.assertEqual(parser.metadata.get("og:url"), "https://modoverbo.vercel.app/")
+        self.assertEqual(parser.metadata.get("og:image"), expected_image)
+        self.assertEqual(parser.metadata.get("og:image:type"), "image/jpeg")
+        self.assertEqual(parser.metadata.get("og:image:width"), "1024")
+        self.assertEqual(parser.metadata.get("og:image:height"), "1536")
+        self.assertEqual(parser.metadata.get("twitter:card"), "summary_large_image")
+        self.assertEqual(parser.metadata.get("twitter:image"), expected_image)
+        self.assertTrue((ROOT / "assets/edition/cover-social-v2.jpg").is_file())
+
     def test_landing_stylesheet_url_has_a_cache_busting_version(self):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertIn('href="styles.css?v=20260925-reference-v6"', html)
@@ -280,7 +312,6 @@ class AuthorSectionTests(unittest.TestCase):
             if int(page) <= 13
         ]
         self.assertEqual(page_assets, list(enumerate(expected_assets, start=1)))
-        self.assertIn('content="assets/edition/cover.webp"', html)
         self.assertIn('src="assets/edition/cover.webp"', html)
         self.assertGreaterEqual(html.count('src="assets/edition/cover.webp"'), 2)
         for path in expected_assets:
