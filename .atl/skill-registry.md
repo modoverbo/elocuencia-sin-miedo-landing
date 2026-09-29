@@ -1,6 +1,6 @@
 # Skill Registry — elocuencia-sin-miedo-landing
 
-Last updated: 2026-09-24
+Last verified: 2026-09-28 (registry refresh cache hit; source scan confirmed)
 
 ## Contract
 
