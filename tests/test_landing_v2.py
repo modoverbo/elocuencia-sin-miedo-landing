@@ -54,6 +54,15 @@ class LandingV2Tests(unittest.TestCase):
         self.assertIn('src="assets/reference/offer-mockup.png"', offer)
         self.assertNotIn("offer-card", offer)
 
+    def test_offer_mockup_flows_before_price_content_inside_its_card(self):
+        offer = self.html[self.html.index('<section class="section offer"'):]
+        pricebox = offer[offer.index('<div class="pricebox">'):]
+        self.assertLess(pricebox.index('class="offer-mockup"'), pricebox.index('class="offer-badge"'))
+        self.assertLess(pricebox.index('class="offer-mockup"'), pricebox.index('class="price"'))
+        exception_styles = self.css.split('/* Approved product exceptions:', 1)[1]
+        self.assertRegex(exception_styles, r'\.offer-mockup\s*\{\s*position:\s*static;')
+        self.assertRegex(exception_styles, r'\.pricebox\s*\{\s*padding-top:\s*\d+px;')
+
     def test_reference_copy_remains_intact_without_the_static_page_strip(self):
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", self.html)).casefold()
         self.assertIn("lo que piensas merece sonar tan claro como lo tienes en la cabeza", text)
