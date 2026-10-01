@@ -84,6 +84,30 @@ class AuthorAndLandingTests(unittest.TestCase):
         self.assertIn("12 ejemplos", hero)
         self.assertIn("ilustrativos", hero)
 
+    def test_hero_illustrative_portraits_match_the_first_four_testimonials(self):
+        hero = self.html[self.html.index('<header class="hero"'):self.html.index('</header>')]
+        testimonials = self.html[self.html.index('<section class="section testimonials"'):]
+        expected = [
+            f"assets/testimonials/{name}-demo.webp"
+            for name in ("santiago", "valentina", "daniel", "isabel")
+        ]
+        hero_portraits = re.findall(r'<img class="avatar-img" src="([^"]+)"', hero)
+        testimonial_portraits = re.findall(r'<img class="testimonial-avatar" src="([^"]+)"', testimonials)
+        self.assertEqual(hero_portraits, expected)
+        self.assertEqual(testimonial_portraits[:4], expected)
+        self.assertTrue(all((ROOT / path).is_file() for path in hero_portraits))
+
+    def test_mobile_hero_conversion_group_centers_its_contents(self):
+        hero = self.html[self.html.index('<header class="hero"'):self.html.index('</header>')]
+        self.assertIn('<div class="hero-conversion">', hero)
+        self.assertLess(hero.index('<div class="hero-conversion">'), hero.index('class="hero-rating"'))
+        exception_styles = self.css.split('/* Approved product exceptions:', 1)[1]
+        self.assertRegex(
+            exception_styles,
+            r'@media\s*\(max-width:\s*560px\)\s*\{\s*\.hero-conversion\s*\{'
+            r'(?=[^}]*align-items:\s*center)(?=[^}]*text-align:\s*center)',
+        )
+
     def test_preview_has_no_static_page_strip_and_keeps_the_flipbook_link(self):
         preview_start = self.html.index('<section class="section preview"')
         preview_end = self.html.index('<div class="interactive-preview"', preview_start)
