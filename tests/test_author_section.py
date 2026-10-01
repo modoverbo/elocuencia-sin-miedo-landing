@@ -64,7 +64,10 @@ class AuthorAndLandingTests(unittest.TestCase):
         self.assertTrue((ROOT / "assets/edition/cover-social-v2.jpg").is_file())
 
     def test_stylesheet_url_has_a_cache_busting_version(self):
-        self.assertIn('href="styles.css?v=20261001-preview-cta-gap"', self.html)
+        self.assertIn('href="styles.css?v=20261001-testimonial-playback"', self.html)
+
+    def test_script_url_has_a_cache_busting_version(self):
+        self.assertIn('src="script.js?v=20261001-testimonial-playback"', self.html)
 
     def test_reference_sections_keep_the_supplied_order(self):
         self.assertEqual(self.parser.sections, REFERENCE_SECTIONS)

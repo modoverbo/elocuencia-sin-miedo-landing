@@ -7,10 +7,13 @@
     const track = byId('testimonial-track');
     const previous = document.querySelector('[data-testimonial-previous]');
     const next = document.querySelector('[data-testimonial-next]');
-    if (!track || !previous || !next) return;
+    const playback = document.querySelector('[data-testimonial-playback]');
+    if (!track || !previous || !next || !playback) return;
 
     const cards = Array.from(track.querySelectorAll('.testimonial'));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const autoplayDelay = 5000;
+    let autoplayTimer = null;
 
     function updateControls() {
       const maximumScroll = Math.max(0, Number(track.scrollWidth || 0) - Number(track.clientWidth || 0));
@@ -33,8 +36,46 @@
       updateControls();
     }
 
+    function updatePlaybackControl(isPlaying) {
+      playback.setAttribute('aria-label', isPlaying
+        ? 'Pausar reproducción automática'
+        : 'Reanudar reproducción automática');
+      playback.setAttribute('aria-pressed', String(isPlaying));
+      playback.textContent = isPlaying ? 'Ⅱ' : '▶';
+    }
+
+    function advanceAutomatically() {
+      const maximumScroll = Math.max(0, Number(track.scrollWidth || 0) - Number(track.clientWidth || 0));
+      if (maximumScroll > 1 && track.scrollLeft >= maximumScroll - 1) {
+        if (track.scrollTo) {
+          track.scrollTo({ left: 0, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+        } else {
+          track.scrollLeft = 0;
+        }
+        updateControls();
+        return;
+      }
+      scrollByCard(1);
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer !== null) clearInterval(autoplayTimer);
+      autoplayTimer = null;
+      updatePlaybackControl(false);
+    }
+
+    function startAutoplay() {
+      if (autoplayTimer !== null || cards.length < 2) return;
+      autoplayTimer = setInterval(advanceAutomatically, autoplayDelay);
+      updatePlaybackControl(true);
+    }
+
     previous.addEventListener('click', () => scrollByCard(-1));
     next.addEventListener('click', () => scrollByCard(1));
+    playback.addEventListener('click', () => {
+      if (autoplayTimer === null) startAutoplay();
+      else stopAutoplay();
+    });
     track.addEventListener('scroll', updateControls, { passive: true });
     track.addEventListener('keydown', (event) => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
@@ -43,6 +84,8 @@
     });
     window.addEventListener('resize', updateControls);
     updateControls();
+    if (reducedMotion.matches) updatePlaybackControl(false);
+    else startAutoplay();
   }
 
   setupTestimonialCarousel();

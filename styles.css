@@ -109,3 +109,5 @@ nav{position:absolute;z-index:5;top:43px;left:0;width:100%;color:#f4f0e7}.navin{
 @media (max-width: 560px) {
   .preview-cta { display: flex; justify-content: center; }
 }
+/* Keep carousel navigation balanced around its playback control. */
+.testimonial-controls { justify-content: center; }
