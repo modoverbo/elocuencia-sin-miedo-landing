@@ -2,72 +2,50 @@
   'use strict';
 
   const byId = (id) => document.getElementById(id);
-  const heroSection = byId('inicio');
-  const purchaseBar = byId('post-hero-buy');
-  const heroPurchaseCta = byId('hero-purchase-cta');
-  const protectedPurchaseTargets = new Map([
-    [byId('preview-controls'), byId('preview-next')],
-    [byId('site-footer'), heroPurchaseCta],
-  ].filter(([region, target]) => region && target));
-  const protectedPurchaseRegions = [...protectedPurchaseTargets.keys()];
-  let heroVisible = true;
-  const protectedRegionVisibility = new Map(protectedPurchaseRegions.map((region) => [region, null]));
-  let purchaseBarVisible = false;
 
-  function updatePurchaseBar() {
-    if (!purchaseBar || !heroSection) return;
-    const shouldShow = !heroVisible && Array.from(protectedRegionVisibility.values()).every((visible) => visible === false);
-    if (shouldShow === purchaseBarVisible) return;
+  function setupTestimonialCarousel() {
+    const track = byId('testimonial-track');
+    const previous = document.querySelector('[data-testimonial-previous]');
+    const next = document.querySelector('[data-testimonial-next]');
+    if (!track || !previous || !next) return;
 
-    if (!shouldShow && purchaseBar.contains(document.activeElement)) {
-      const visibleProtectedRegion = protectedPurchaseRegions.find((region) => protectedRegionVisibility.get(region));
-      const focusTarget = heroVisible
-        ? heroPurchaseCta
-        : protectedPurchaseTargets.get(visibleProtectedRegion) || heroPurchaseCta;
-      focusTarget?.focus({ preventScroll: true });
-    }
-    purchaseBar.hidden = !shouldShow;
-    purchaseBar.inert = !shouldShow;
-    purchaseBar.setAttribute('aria-hidden', String(!shouldShow));
-    purchaseBar.classList.toggle('is-visible', shouldShow);
-    purchaseBarVisible = shouldShow;
-  }
+    const cards = Array.from(track.querySelectorAll('.testimonial'));
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  function watchPurchaseBarVisibility() {
-    if (!purchaseBar || !heroSection) return;
-    const observedTargets = [heroSection, ...protectedPurchaseRegions];
-    if (window.IntersectionObserver) {
-      const observer = new window.IntersectionObserver((entries) => {
-        for (const entry of entries) {
-          if (entry.target === heroSection) heroVisible = entry.isIntersecting;
-          else if (protectedRegionVisibility.has(entry.target)) {
-            protectedRegionVisibility.set(entry.target, entry.isIntersecting);
-          }
-        }
-        updatePurchaseBar();
-      }, { threshold: 0 });
-      observedTargets.forEach((target) => observer.observe(target));
-      return;
+    function updateControls() {
+      const maximumScroll = Math.max(0, Number(track.scrollWidth || 0) - Number(track.clientWidth || 0));
+      previous.disabled = track.scrollLeft <= 1;
+      next.disabled = maximumScroll <= 1 || track.scrollLeft >= maximumScroll - 1;
     }
 
-    const updateFromViewport = () => {
-      const viewportBottom = window.innerHeight || document.documentElement.clientHeight;
-      const intersectsViewport = (target) => {
-        const bounds = target.getBoundingClientRect();
-        return bounds.bottom > 0 && bounds.top < viewportBottom;
-      };
-      heroVisible = intersectsViewport(heroSection);
-      protectedPurchaseRegions.forEach((region) => {
-        protectedRegionVisibility.set(region, intersectsViewport(region));
-      });
-      updatePurchaseBar();
-    };
-    window.addEventListener('scroll', updateFromViewport, { passive: true });
-    window.addEventListener('resize', updateFromViewport);
-    updateFromViewport();
+    function scrollByCard(direction) {
+      if (!cards.length) return;
+      const cardWidth = cards[0].getBoundingClientRect().width || track.clientWidth || 320;
+      const gap = window.getComputedStyle
+        ? Number.parseFloat(window.getComputedStyle(track).columnGap || window.getComputedStyle(track).gap) || 16
+        : 16;
+      const distance = (cardWidth + gap) * direction;
+      if (track.scrollBy) {
+        track.scrollBy({ left: distance, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+      } else {
+        track.scrollLeft += distance;
+      }
+      updateControls();
+    }
+
+    previous.addEventListener('click', () => scrollByCard(-1));
+    next.addEventListener('click', () => scrollByCard(1));
+    track.addEventListener('scroll', updateControls, { passive: true });
+    track.addEventListener('keydown', (event) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      scrollByCard(event.key === 'ArrowRight' ? 1 : -1);
+    });
+    window.addEventListener('resize', updateControls);
+    updateControls();
   }
 
-  watchPurchaseBarVisibility();
+  setupTestimonialCarousel();
 
   const bookElement = byId('flipbook');
   if (!bookElement) return;

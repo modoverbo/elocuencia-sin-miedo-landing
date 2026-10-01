@@ -94,6 +94,9 @@ function loadPreview({ reducedMotion = false, intersectionObserver = true, bookT
       if (!elements.has(id)) elements.set(id, new FakeElement());
       return elements.get(id);
     },
+    querySelector() {
+      return null;
+    },
     addEventListener() {},
   };
   const motionPreference = {
