@@ -21,11 +21,12 @@ Corregir tres defectos señalados por el propietario en la preview móvil: las t
 
 ## Tareas
 
-- [ ] T1 — Eliminar la tira de tres páginas estáticas y ajustar su layout. Criterio: no quedan miniaturas estáticas; el flipbook y sus controles siguen presentes. Pruebas RED/GREEN de estructura y checks de preview. Evidencia de commit: pendiente.
+- [x] T1 — Eliminar la tira de tres páginas estáticas y ajustar su layout. Criterio: no quedan miniaturas estáticas; el flipbook y sus controles siguen presentes. RED: `python3 -m unittest discover -s tests -p 'test_*.py'` falló como se esperaba (41 pruebas, 3 fallos por las miniaturas presentes). GREEN: 41/41; `node --test tests/*.js`: 8/8; `git diff --check`: limpio. QA local: a 390 px y 1280 px no aparecen miniaturas; el enlace, el flipbook y sus controles permanecen visibles, y el bloque introductorio ocupa una columna sin hueco lateral. Commit: `d6cd7de` (`fix(landing): remove duplicate static preview pages`). Rollback: revertir solo el markup de muestra, su override de layout y las pruebas de T1.
 - [ ] T2 — Centrar CTA/prueba social del hero y mostrar los cuatro retratos ilustrativos existentes. Criterio: en móvil el grupo queda centrado y cada avatar tiene foto visible; se conserva la divulgación de ejemplos ilustrativos. Pruebas RED/GREEN de rutas/estilos y QA visual. Evidencia de commit: pendiente.
 - [ ] T3 — Bajar el mockup de la oferta. Criterio: a 360–390 px y en tablet no cubre el texto «7 días de garantía» y permanece dentro de la tarjeta de precio. Pruebas RED/GREEN de estilos y QA visual. Evidencia de commit: pendiente.
 
 ## Progreso y siguiente paso
 
 - Mapeo de solo lectura completado; `main` limpio en `0fff1c8` al comenzar.
-- Siguiente paso: T1. Registrar el resultado real de cada comando, la QA visual y el commit antes de marcar una tarea.
+- T1 completada en `d6cd7de`; 62 líneas authored (45 adiciones, 17 eliminaciones) en el primer work unit, incluido este documento inicial.
+- Siguiente paso: T2. Registrar el resultado real de cada comando, la QA visual y el commit antes de marcar una tarea.
