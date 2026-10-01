@@ -84,17 +84,13 @@ class AuthorAndLandingTests(unittest.TestCase):
         self.assertIn("12 ejemplos", hero)
         self.assertIn("ilustrativos", hero)
 
-    def test_reference_preview_retains_its_three_local_page_images_in_order(self):
+    def test_preview_has_no_static_page_strip_and_keeps_the_flipbook_link(self):
         preview_start = self.html.index('<section class="section preview"')
         preview_end = self.html.index('<div class="interactive-preview"', preview_start)
         preview = self.html[preview_start:preview_end]
-        pages = re.findall(r'<img class="preview-teaser-page" src="([^"]+)"', preview)
-        self.assertEqual(pages, [
-            "assets/edition/page-02.webp",
-            "assets/edition/page-03.webp",
-            "assets/edition/page-04.webp",
-        ])
-        self.assertEqual(len(re.findall(r'<img class="preview-teaser-page"', preview)), 3)
+        self.assertNotIn('class="pages"', preview)
+        self.assertNotIn('class="preview-teaser-page"', preview)
+        self.assertIn('href="#interactive-preview"', preview)
 
     def test_interactive_flipbook_uses_the_corrected_local_page_manifest(self):
         manifest = json.loads((ROOT / "assets/edition/preview-manifest.json").read_text(encoding="utf-8"))

@@ -54,20 +54,20 @@ class LandingV2Tests(unittest.TestCase):
         self.assertIn('src="assets/reference/offer-mockup.png"', offer)
         self.assertNotIn("offer-card", offer)
 
-    def test_reference_copy_and_three_page_visual_remain_intact(self):
+    def test_reference_copy_remains_intact_without_the_static_page_strip(self):
         text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", self.html)).casefold()
         self.assertIn("lo que piensas merece sonar tan claro como lo tienes en la cabeza", text)
         self.assertIn("empieza a hablar con más claridad", text)
         preview_start = self.html.index('<section class="section preview"')
         preview_end = self.html.index('<div class="interactive-preview"', preview_start)
-        pages = re.findall(r'<img class="preview-teaser-page" src="([^"]+)"', self.html[preview_start:preview_end])
-        self.assertEqual(pages, ["assets/edition/page-02.webp", "assets/edition/page-03.webp", "assets/edition/page-04.webp"])
+        self.assertNotIn('class="pages"', self.html[preview_start:preview_end])
+        self.assertNotIn('class="preview-teaser-page"', self.html[preview_start:preview_end])
 
-    def test_page_turning_preview_is_separate_from_the_reference_three_page_visual(self):
-        static_preview = self.html.index('<section class="section preview"')
+    def test_page_turning_preview_follows_the_reference_copy(self):
+        preview_intro = self.html.index('<section class="section preview"')
         interactive_preview = self.html.index('<div class="interactive-preview"')
         benefits = self.html.index('<section class="section" id="incluye"')
-        self.assertLess(static_preview, interactive_preview)
+        self.assertLess(preview_intro, interactive_preview)
         self.assertLess(interactive_preview, benefits)
         self.assertIn('id="flipbook"', self.html)
         self.assertIn('id="preview-next"', self.html)

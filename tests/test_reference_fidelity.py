@@ -150,7 +150,7 @@ class ReferenceFidelityTests(unittest.TestCase):
 
     def test_only_approved_product_exceptions_are_added_to_reference_surfaces(self):
         self.assertEqual(self.parser.testimonial_cards, 12)
-        self.assertEqual(self.parser.teaser_pages, 3)
+        self.assertEqual(self.parser.teaser_pages, 0)
         self.assertIn('id="interactive-preview"', self.html)
         self.assertIn('id="preview-next"', self.html)
         self.assertIn('id="preview-previous"', self.html)
