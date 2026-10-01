@@ -8,7 +8,7 @@
 
 ---
 
-# Engineering Decision Policy
+# Engineering Decision Policy 
 
 Act as a senior engineer and technical partner, not merely as an implementation agent.
 
