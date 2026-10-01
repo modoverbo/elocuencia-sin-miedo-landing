@@ -64,7 +64,7 @@ class AuthorAndLandingTests(unittest.TestCase):
         self.assertTrue((ROOT / "assets/edition/cover-social-v2.jpg").is_file())
 
     def test_stylesheet_url_has_a_cache_busting_version(self):
-        self.assertIn('href="styles.css?v=20261001-mobile-fixes"', self.html)
+        self.assertIn('href="styles.css?v=20261001-preview-cta-gap"', self.html)
 
     def test_reference_sections_keep_the_supplied_order(self):
         self.assertEqual(self.parser.sections, REFERENCE_SECTIONS)
@@ -108,13 +108,23 @@ class AuthorAndLandingTests(unittest.TestCase):
             r'(?=[^}]*align-items:\s*center)(?=[^}]*text-align:\s*center)',
         )
 
-    def test_preview_has_no_static_page_strip_and_keeps_the_flipbook_link(self):
+    def test_preview_has_one_centered_book_cta_and_keeps_the_interactive_flipbook(self):
         preview_start = self.html.index('<section class="section preview"')
         preview_end = self.html.index('<div class="interactive-preview"', preview_start)
         preview = self.html[preview_start:preview_end]
         self.assertNotIn('class="pages"', preview)
         self.assertNotIn('class="preview-teaser-page"', preview)
-        self.assertIn('href="#interactive-preview"', preview)
+        self.assertIn('<div class="preview-cta"><a class="btn gold-cta" href="#comprar">QUIERO EL LIBRO ↗</a></div>', preview)
+        self.assertNotIn("EXPLORA LA MUESTRA INTERACTIVA", preview)
+        self.assertIn('id="interactive-preview"', self.html)
+        self.assertIn('id="flipbook"', self.html)
+
+        exception_styles = self.css.split('/* Approved product exceptions:', 1)[1]
+        self.assertRegex(
+            exception_styles,
+            r'@media\s*\(max-width:\s*560px\)\s*\{[^}]*\.preview-cta\s*\{'
+            r'(?=[^}]*display:\s*flex)(?=[^}]*justify-content:\s*center)',
+        )
 
     def test_interactive_flipbook_uses_the_corrected_local_page_manifest(self):
         manifest = json.loads((ROOT / "assets/edition/preview-manifest.json").read_text(encoding="utf-8"))

@@ -99,9 +99,13 @@ nav{position:absolute;z-index:5;top:43px;left:0;width:100%;color:#f4f0e7}.navin{
 /* Keep the offer image inside the price card and after the included benefits. */
 .pricebox { padding-top: 28px; }
 .offer-mockup { position: static; top: auto; left: auto; width: min(440px, 100%); transform: none; margin: 0 auto 20px; }
+.testimonial-grid { padding-bottom: 12px; }
 @media (prefers-reduced-motion: reduce) {
   .testimonial-grid { scroll-behavior: auto; }
   .book { animation: none !important; }
   .preview-swipe-cue.is-animated { animation: none !important; }
   *, *::before, *::after { scroll-behavior: auto !important; }
+}
+@media (max-width: 560px) {
+  .preview-cta { display: flex; justify-content: center; }
 }

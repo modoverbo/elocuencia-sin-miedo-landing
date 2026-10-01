@@ -102,6 +102,12 @@ class TestimonialSectionTests(unittest.TestCase):
         self.assertIn("grid-auto-columns:100%", self.css.replace(" ", ""))
         self.assertIn("prefers-reduced-motion:reduce", self.css.replace(" ", ""))
 
+    def test_scrollbar_is_separated_from_the_testimonial_cards(self):
+        self.assertRegex(
+            self.css,
+            r"\.testimonial-grid\s*\{[^}]*padding-bottom:\s*12px",
+        )
+
     def test_demo_disclosure_identifies_the_testimonials_and_portraits_as_fictional(self):
         self.assertIn("Demo educativa: los testimonios y retratos son ficticios e ilustrativos", self.html)
         self.assertIn("no son reseñas verificadas", self.html)
